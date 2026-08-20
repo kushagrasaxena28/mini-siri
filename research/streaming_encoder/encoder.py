@@ -38,8 +38,9 @@ SUBSAMPLING_CONTEXT_MEL_FRAMES = 8
 class StreamingEncoder:
     """Drives a Conformer encoder incrementally, one chunk at a time.
 
-    `encoder` is any module exposing `.layers` of Conformer blocks -- the
-    pretrained one, or the from-scratch stack in research/conformer_from_scratch/.
+    `encoder` is any module exposing `.layers` of Conformer blocks. In practice
+    that is always the PRETRAINED parakeet-mlx encoder -- conformer_from_scratch/
+    reimplements a single block, not a stack, so it cannot be driven here.
     """
 
     def __init__(

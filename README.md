@@ -11,6 +11,12 @@ mic → voice detection → speech recognition → small language model → acti
 Every model runs locally on Apple Silicon via [MLX](https://github.com/ml-explore/mlx).
 Nothing leaves the laptop. Turn off Wi-Fi and it still works.
 
+> If you are here to read the engineering rather than run it, start with
+> [**What was built here, and what wasn't**](#what-was-built-here-and-what-wasnt) — a Conformer
+> encoder block reimplemented from scratch and verified to 1.9e-05 against the pretrained
+> weights, and a cache-aware streaming encoder that was built, proven correct to 5.5e-07,
+> measured against a pre-registered decision rule, and then deliberately not shipped.
+
 ---
 
 ## Install
@@ -133,8 +139,9 @@ Stated plainly rather than buried.
 
 - **No streaming recognition.** It transcribes after you finish speaking, not during. Streaming
   was built and measured; this speech model was trained on complete utterances and collapses
-  when fed in chunks — an independent implementation fails the same way. See
-  `research/README.md` and `ENGINEERING.md` §6. It costs less than it sounds: speech recognition
+  when fed in chunks — an independent implementation fails the same way. The measurements and
+  the pre-registered decision rule are in [What was built here](#what-was-built-here-and-what-wasnt).
+  It costs less than it sounds: speech recognition
   is already hidden inside the endpoint wait (see Performance), so there is no latency left on
   the table for streaming to recover.
 - **No speaker recognition.** It obeys anyone within earshot. This is why the action set is
@@ -243,6 +250,98 @@ ranks on validation and is not optional. `build_dataset.py` is deterministic: re
 the seeds reproduces the committed splits byte-for-byte.
 
 ---
+
+## What was built here, and what wasn't
+
+Worth being explicit, because "local voice assistant" can mean anything from real
+engineering to four model calls wired together.
+
+**Third-party, and not pretending otherwise:** the model weights are all pretrained —
+NVIDIA Parakeet TDT 0.6B (speech recognition), Qwen3 1.7B (the base for the intent model),
+Kokoro 82M (synthesis), Silero VAD. Transcription itself is a `parakeet-mlx` call. Training a
+0.6B speech encoder on a laptop is not feasible and was never the goal.
+
+### The Conformer encoder block, reimplemented from scratch
+
+`research/conformer_from_scratch/` is a Conformer encoder block written from scratch in MLX —
+relative-position multi-head attention, the depthwise convolution module, the macaron
+feed-forward pair, and the block composing them. It is loaded with the **pretrained** Parakeet
+weights and compared element-wise against that checkpoint's own layer:
+
+```
+full block, max abs diff vs pretrained:  1.907e-05
+```
+
+Writing a Conformer-*shaped* module is a tutorial exercise. Making it a numerically exact
+drop-in for pretrained weights is not — it forces the macaron ½ residual scale, pre-norm
+ordering, relative-position index arithmetic, BatchNorm eval mode and the exact weight layout
+to all be right at once. One wrong detail and the diff is 1e-1, not 1e-5.
+
+**Scope, stated plainly:** this is one *block*, not an ASR system. The 24-layer stack, the
+subsampling frontend, the TDT decoder and the tokenizer are all `parakeet-mlx`. Verified by
+`tests/test_conformer_numerical.py`.
+
+### Why there is no streaming recognition — and how that was decided
+
+This is the part I would point at. Streaming was **built, proven correct, measured, and then
+deliberately not shipped**, and the decision rule was fixed before the measurement:
+
+| measured | action |
+|---|---|
+| within ~2% of offline | ship streaming |
+| 2–10% worse | add right-context lookahead, re-measure |
+| **>10% worse** | **fall back to offline ASR** |
+
+`research/streaming_encoder/` carries per-layer attention and convolution state across chunks.
+Fed a whole utterance as one chunk it reproduces the offline encoder to **5.513e-07** — the
+implementation is correct, not broken.
+
+Along the way it turned up something the phrase "cache-aware streaming" hides: **the subsampling
+stem needs its own cache.** The strided convolutions in the frontend have a receptive field, and
+cutting it at a chunk boundary corrupts features before any layer runs:
+
+| mel frames of left context | max abs diff at the stem |
+|---|---|
+| 0 | 2759.60 |
+| 4 | 9260.95 — *worse than zero* |
+| **8 (80 ms)** | **0.0049** |
+| 16, 32 | 0.0049 (no further gain) |
+
+That pins the stem's receptive field at ≤ 8 mel frames. Four frames is worse than none: enough
+to shift the alignment, not enough to cover the field.
+
+With all of that correct, chunked streaming still collapsed — **0/8 transcripts matched offline**
+at 320 ms and 640 ms ("Set a timer for 10 minutes." → "ten minutes."). Before blaming the model
+I ran a control: `parakeet-mlx`'s own `transcribe_stream()` on the same checkpoint and clips
+returns **0/6**, most of them empty. Two independent implementations failing identically means
+the cause is upstream of both — and it is: `att_context_size = [-1, -1]`, read from the
+checkpoint's own config. This model was trained seeing the whole utterance with bidirectional
+attention. Chunked streaming asks it to work under a condition it has never seen.
+
+0/8 is far past the third row of the table, so the pre-committed fallback was taken. **It cost
+the product nothing** — recognition already runs during the endpoint wait, so it contributes
+0.00 ms to a turn (see Performance). Streaming would have optimised a stage that no longer
+appears in the latency budget. Making it work needs a checkpoint *trained* with limited context,
+ported to MLX — that port is the real work, not this loop.
+
+Full write-up: [`research/README.md`](research/README.md) and `ENGINEERING.md` §6.
+
+### The rest of the engineering
+
+- **The trust boundary.** `IntentCall` is constructible only by `validate()`, so there is no code
+  path from raw model text to an action — enforced by types, not convention. Destructive
+  capability is *absent* from `executor/`, not merely refused.
+- **Recognition hidden inside the endpoint wait.** Because trailing silence is always dropped,
+  the audio at the first silent frame is byte-identical to what the turn ends with — so the
+  transcript is computed *during* the 288 ms hangover. ASR contributes 0.00 ms.
+- **The intent model and its dataset.** 33 seed files → 2,409 seeds → 3,675/360/363 splits, every
+  row validated against the same `validate()` the runtime uses, split by family with no leakage,
+  and byte-for-byte reproducible from the seeds.
+- **A hand-written greedy decode** replacing `mlx_lm.generate`, removing a measured **126 ms/turn**
+  of per-step sampler overhead (a 152k-vocab `logsumexp` for what temperature 0 makes an `argmax`)
+  and verified token-identical against the reference on the whole held-out set.
+- **Conversation memory in the KV cache** rather than the prompt, with declined turns trimmed
+  back out so overheard speech cannot poison the next command.
 
 ## Development
 

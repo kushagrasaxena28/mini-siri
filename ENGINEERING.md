@@ -234,8 +234,11 @@ Prompt length is already absorbed by prefix-KV reuse — 253 ms at 478 prompt to
 at 224. **Only output tokens cost anything**, at ~16 ms each. The previous figure of 186 ms of
 fixed cost was `mlx_lm.generate` wrapper overhead: a 152k-vocab `logsumexp` and sampler machinery
 per step, for what temperature 0 makes an `argmax`. Replacing it with an explicit greedy loop
-removed 138 ms/turn and is verified token-identical against the reference on the whole held-out
-set (`tests/test_slm_cache.py`).
+removed **126 ms/turn** -- re-measured over 25 held-out transcripts with the system prompt
+prefilled on both sides, so the figure isolates decoding rather than prefill (median 339 ms ours
+vs 465 ms the wrapper). An earlier note here said 138 ms; 126 ms is what reproduces. The
+substitution is verified token-identical against the reference on the whole held-out set
+(`tests/test_slm_cache.py`).
 
 ### Prefix KV-cache reuse is a rate, not an identity
 

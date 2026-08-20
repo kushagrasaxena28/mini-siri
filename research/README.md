@@ -25,6 +25,10 @@ convolution module (`convolution.py`), the macaron feed-forward pair
 (`feedforward.py`), and the block that composes them with the correct residual
 scaling and normalisation order (`block.py`).
 
+**What was NOT built.** The 24-layer encoder stack, the convolutional subsampling
+frontend, the TDT decoder, the tokenizer, and the mel frontend. This is one block,
+not an ASR system — the shipped pipeline calls `parakeet-mlx` for all of it.
+
 **What is third-party.** The *weights*. The block is loaded with the pretrained
 tensors from `mlx-community/parakeet-tdt-0.6b-v3` (NVIDIA Parakeet TDT 0.6B) and
 compared element-wise against that checkpoint's own encoder layer.
