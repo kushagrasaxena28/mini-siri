@@ -1,0 +1,93 @@
+# Enumerating is not opening and not searching. Live testing found "What all
+# folders do I have in downloads?" OPENED Downloads, and "What all notes do I
+# have?" searched for the literal word "notes" -- both adjacent actions rather
+# than the one asked for.
+#
+# `where` is an ALLOWED_PATHS key, so listing can never walk outside the eight
+# standard folders.
+
+- text: "what all notes do I have"
+  intent: list_items
+  args: {what: "notes"}
+- text: "list my notes"
+  intent: list_items
+  args: {what: "notes"}
+- text: "how many notes do I have"
+  intent: list_items
+  args: {what: "notes"}
+- text: "show me all my notes"
+  intent: list_items
+  args: {what: "notes"}
+- text: "what notes are there"
+  intent: list_items
+  args: {what: "notes"}
+- text: "read out my notes"
+  intent: list_items
+  args: {what: "notes"}
+
+- text: "what all folders do I have in downloads"
+  intent: list_items
+  args: {what: "files", where: "downloads"}
+- text: "what's in my downloads"
+  intent: list_items
+  args: {what: "files", where: "downloads"}
+- text: "list the files in documents"
+  intent: list_items
+  args: {what: "files", where: "documents"}
+- text: "what's on my desktop"
+  intent: list_items
+  args: {what: "files", where: "desktop"}
+- text: "show me what's in my pictures"
+  intent: list_items
+  args: {what: "files", where: "pictures"}
+- text: "how many files are in downloads"
+  intent: list_items
+  args: {what: "files", where: "downloads"}
+- text: "what files are in my movies folder"
+  intent: list_items
+  args: {what: "files", where: "movies"}
+
+# Thin at 13 seeds against open_path (34) and search_notes (41), which it was
+# being mis-routed to.
+- text: "what is in my documents folder"
+  intent: list_items
+  args: {what: "files", where: "documents"}
+- text: "list everything on my desktop"
+  intent: list_items
+  args: {what: "files", where: "desktop"}
+- text: "how many files do I have in documents"
+  intent: list_items
+  args: {what: "files", where: "documents"}
+- text: "what pictures do I have"
+  intent: list_items
+  args: {what: "files", where: "pictures"}
+- text: "show me my downloads"
+  intent: list_items
+  args: {what: "files", where: "downloads"}
+- text: "what movies do I have"
+  intent: list_items
+  args: {what: "files", where: "movies"}
+- text: "list the contents of downloads"
+  intent: list_items
+  args: {what: "files", where: "downloads"}
+- text: "what have I got in documents"
+  intent: list_items
+  args: {what: "files", where: "documents"}
+- text: "read me my notes"
+  intent: list_items
+  args: {what: "notes"}
+- text: "what notes have I saved"
+  intent: list_items
+  args: {what: "notes"}
+- text: "give me all my notes"
+  intent: list_items
+  args: {what: "notes"}
+- text: "how many notes are saved"
+  intent: list_items
+  args: {what: "notes"}
+- text: "list all notes"
+  intent: list_items
+  args: {what: "notes"}
+- text: "what's in my music folder"
+  intent: list_items
+  args: {what: "files", where: "music"}

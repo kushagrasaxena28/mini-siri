@@ -1,0 +1,245 @@
+# provenance: llm_draft -- pending human spot-check.
+#
+# `text` is the note CONTENT with the trigger phrase stripped. Zero-shot eval missed
+# "remember that the wifi password is on the fridge" entirely, so the trigger
+# vocabulary is deliberately broad here: note / note to self / make a note /
+# remember / don't forget / jot down / write down / take a note / add a note.
+#
+# Trigger-stripping is the arg-extraction skill being taught: the model must drop
+# "note that" and keep the rest verbatim, including any leading article.
+
+# -- "note ..." ------------------------------------------------------------------
+- text: "note check the cache config tomorrow"
+  intent: capture_note
+  args: {text: "check the cache config tomorrow"}
+- text: "note check the cache config"
+  intent: capture_note
+  args: {text: "check the cache config"}
+- text: "note, ask Sarah about the budget"
+  intent: capture_note
+  args: {text: "ask Sarah about the budget"}
+- text: "note the encoder frame is 80 milliseconds"
+  intent: capture_note
+  args: {text: "the encoder frame is 80 milliseconds"}
+- text: "note that the deploy is scheduled for Monday"
+  intent: capture_note
+  args: {text: "the deploy is scheduled for Monday"}
+- text: "note that I need to renew my passport"
+  intent: capture_note
+  args: {text: "I need to renew my passport"}
+
+# -- "note to self ..." ------------------------------------------------------------
+- text: "note to self, buy milk"
+  intent: capture_note
+  args: {text: "buy milk"}
+- text: "note to self, the API key expires in June"
+  intent: capture_note
+  args: {text: "the API key expires in June"}
+- text: "note to self call the landlord"
+  intent: capture_note
+  args: {text: "call the landlord"}
+
+# -- "make a note ..." -------------------------------------------------------------
+- text: "make a note that the meeting moved to 3pm"
+  intent: capture_note
+  args: {text: "the meeting moved to 3pm"}
+- text: "make a note, look into the vad threshold tomorrow"
+  intent: capture_note
+  args: {text: "look into the vad threshold tomorrow"}
+- text: "make a note to review the pull request"
+  intent: capture_note
+  args: {text: "review the pull request"}
+
+# -- "remember ..." (missed by the zero-shot baseline) -------------------------------
+- text: "remember that the wifi password is on the fridge"
+  intent: capture_note
+  args: {text: "the wifi password is on the fridge"}
+- text: "remember to water the plants"
+  intent: capture_note
+  args: {text: "water the plants"}
+- text: "remember the car is due for service next month"
+  intent: capture_note
+  args: {text: "the car is due for service next month"}
+- text: "remember that Jake prefers morning meetings"
+  intent: capture_note
+  args: {text: "Jake prefers morning meetings"}
+
+# -- "don't forget ..." --------------------------------------------------------------
+- text: "don't forget to submit the timesheet"
+  intent: capture_note
+  args: {text: "submit the timesheet"}
+- text: "don't let me forget the dentist appointment is Thursday"
+  intent: capture_note
+  args: {text: "the dentist appointment is Thursday"}
+
+# -- "jot / write down ..." ------------------------------------------------------------
+- text: "jot down call the dentist"
+  intent: capture_note
+  args: {text: "call the dentist"}
+- text: "jot this down, the flight leaves at 6am"
+  intent: capture_note
+  args: {text: "the flight leaves at 6am"}
+- text: "write down pick up the dry cleaning"
+  intent: capture_note
+  args: {text: "pick up the dry cleaning"}
+- text: "write this down, the server restarts at midnight"
+  intent: capture_note
+  args: {text: "the server restarts at midnight"}
+
+# -- "take a note / add a note ..." ------------------------------------------------------
+- text: "take a note, finish the report by Friday"
+  intent: capture_note
+  args: {text: "finish the report by Friday"}
+- text: "add a note that the budget review is delayed"
+  intent: capture_note
+  args: {text: "the budget review is delayed"}
+- text: "take a note about the streaming latency numbers"
+  intent: capture_note
+  args: {text: "the streaming latency numbers"}
+
+# -- filler-heavy ---------------------------------------------------------------------
+- text: "um note to self, check the logs tomorrow morning"
+  intent: capture_note
+  args: {text: "check the logs tomorrow morning"}
+- text: "hey can you note that the build is failing on main"
+  intent: capture_note
+  args: {text: "the build is failing on main"}
+
+# -- full-content retention (eval: "Note, ask Sarah about the budget." kept only "the budget") --
+# The note text is everything after the trigger, verbatim -- not just the tail noun phrase.
+- text: "note, email Tom about the contract"
+  intent: capture_note
+  args: {text: "email Tom about the contract"}
+- text: "note, check with Priya about the release date"
+  intent: capture_note
+  args: {text: "check with Priya about the release date"}
+- text: "note, follow up with the vendor on pricing"
+  intent: capture_note
+  args: {text: "follow up with the vendor on pricing"}
+- text: "note, ask the team about the migration plan"
+  intent: capture_note
+  args: {text: "ask the team about the migration plan"}
+- text: "note, remind Alex about the standup"
+  intent: capture_note
+  args: {text: "remind Alex about the standup"}
+
+# -- contrastive pairs for triggers that ALSO appear bare in unknown.yaml -----------
+# Each of these uses the SAME trigger word as a bare/empty unknown.yaml example, so
+# the model learns "is there content after the trigger", not "which word was used".
+# Fixed a real regression: without these, "Remember that Jake prefers morning
+# meetings." and "Write this down, the server restarts at midnight." were being
+# declined as unknown after the empty-trigger examples were added.
+- text: "remember this, the meeting is at 3pm"
+  intent: capture_note
+  args: {text: "the meeting is at 3pm"}
+- text: "remember this: the gate code is 4471"
+  intent: capture_note
+  args: {text: "the gate code is 4471"}
+- text: "write this down, pick up dry cleaning on Friday"
+  intent: capture_note
+  args: {text: "pick up dry cleaning on Friday"}
+- text: "jot this down, the invoice number is 88213"
+  intent: capture_note
+  args: {text: "the invoice number is 88213"}
+- text: "take a note, the wifi password changed"
+  intent: capture_note
+  args: {text: "the wifi password changed"}
+- text: "add a note, the flight got delayed to 9pm"
+  intent: capture_note
+  args: {text: "the flight got delayed to 9pm"}
+- text: "make a note, call the plumber tomorrow"
+  intent: capture_note
+  args: {text: "call the plumber tomorrow"}
+
+# -- reinforcing "note that X" specifically: only 2 examples existed, and it is a
+# very natural high-frequency phrasing. Regressed to unknown after the empty-"note"
+# negative was added (1:2 ratio for this exact clause pattern was not enough).
+- text: "note that I need milk"
+  intent: capture_note
+  args: {text: "I need milk"}
+- text: "note that we're out of coffee"
+  intent: capture_note
+  args: {text: "we're out of coffee"}
+- text: "note that the printer is out of toner"
+  intent: capture_note
+  args: {text: "the printer is out of toner"}
+- text: "note that Friday is a holiday"
+  intent: capture_note
+  args: {text: "Friday is a holiday"}
+- text: "note that the invoice was paid"
+  intent: capture_note
+  args: {text: "the invoice was paid"}
+
+# -- "remember X" reinforcement (regression sweep 2026-08-18) -------------------------
+# These exact phrasings failed the post-training sweep. Two were held-out (landed in
+# valid/test splits, so never trained) and one was trained verbatim but still missed --
+# "remember the ..." starts identically to the bare "remember this" -> unknown trigger,
+# so the decision boundary needs more density on this side of it.
+- text: "remember the spare key is under the mat"
+  intent: capture_note
+  args: {text: "the spare key is under the mat"}
+- text: "remember the standup moved to 10am"
+  intent: capture_note
+  args: {text: "the standup moved to 10am"}
+- text: "remember that the landlord is coming Tuesday"
+  intent: capture_note
+  args: {text: "the landlord is coming Tuesday"}
+- text: "remember that Priya is on leave next week"
+  intent: capture_note
+  args: {text: "Priya is on leave next week"}
+- text: "don't let me forget to renew the insurance"
+  intent: capture_note
+  args: {text: "renew the insurance"}
+- text: "don't let me forget the parking permit expires Friday"
+  intent: capture_note
+  args: {text: "the parking permit expires Friday"}
+- text: "remember the router password is on the box"
+  intent: capture_note
+  args: {text: "the router password is on the box"}
+
+# Trigger verbs the model lost when multi-command unknowns were added: the note
+# intents share vocabulary with "open notes" and had to be re-separated.
+- text: "jot down that Priya moved desks"
+  intent: capture_note
+  args: {text: "Priya moved desks"}
+- text: "jot down the meeting is at four"
+  intent: capture_note
+  args: {text: "the meeting is at four"}
+- text: "save a note the spare key is under the mat"
+  intent: capture_note
+  args: {text: "the spare key is under the mat"}
+- text: "save a note that the invoice is paid"
+  intent: capture_note
+  args: {text: "the invoice is paid"}
+- text: "remind me in my notes that the visa expires in May"
+  intent: capture_note
+  args: {text: "the visa expires in May"}
+- text: "put in my notes that the car needs new tyres"
+  intent: capture_note
+  args: {text: "the car needs new tyres"}
+- text: "write down that the boiler service is due in March"
+  intent: capture_note
+  args: {text: "the boiler service is due in March"}
+
+# -- from live testing: "add some notes for me that X" declined ----------------
+# The longest, most natural phrasing in the session -- "Can you add some notes for
+# me that I have a meeting at seven fifty?" -- returned unknown. The note verb is
+# wrapped in a request and separated from its content by "that".
+- text: "can you add some notes for me that I have a meeting at seven fifty"
+  intent: capture_note
+  args: {text: "I have a meeting at seven fifty"}
+- text: "can you add a note that I have a meeting at ten"
+  intent: capture_note
+  args: {text: "I have a meeting at ten"}
+- text: "add to my notes that the deploy is on friday"
+  intent: capture_note
+  args: {text: "the deploy is on friday"}
+- text: "can you note down that the rent is due on the fifth"
+  intent: capture_note
+  args: {text: "the rent is due on the fifth"}
+- text: "add a note for me that the keys are with the neighbour"
+  intent: capture_note
+  args: {text: "the keys are with the neighbour"}
+- text: "can you make a note that I parked on level three"
+  intent: capture_note
+  args: {text: "I parked on level three"}

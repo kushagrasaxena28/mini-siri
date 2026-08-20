@@ -1,0 +1,108 @@
+# provenance: llm_draft -- pending human spot-check.
+# path must be one of the allowlist keys, not a free filesystem path.
+- text: "open my downloads folder"
+  intent: open_path
+  args: {path: "downloads"}
+- text: "open downloads"
+  intent: open_path
+  args: {path: "downloads"}
+- text: "open my documents"
+  intent: open_path
+  args: {path: "documents"}
+- text: "open the desktop"
+  intent: open_path
+  args: {path: "desktop"}
+- text: "show me my home folder"
+  intent: open_path
+  args: {path: "home"}
+- text: "open applications folder"
+  intent: open_path
+  args: {path: "applications"}
+- text: "open my pictures"
+  intent: open_path
+  args: {path: "pictures"}
+- text: "open the music folder"
+  intent: open_path
+  args: {path: "music"}
+- text: "open my movies folder"
+  intent: open_path
+  args: {path: "movies"}
+- text: "can you open my downloads"
+  intent: open_path
+  args: {path: "downloads"}
+- text: "pull up my documents folder"
+  intent: open_path
+  args: {path: "documents"}
+- text: "open desktop please"
+  intent: open_path
+  args: {path: "desktop"}
+
+# -- filler-heavy / additional coverage ---------------------------------------------
+- text: "um open my downloads"
+  intent: open_path
+  args: {path: "downloads"}
+- text: "take me to my documents"
+  intent: open_path
+  args: {path: "documents"}
+- text: "show me the desktop"
+  intent: open_path
+  args: {path: "desktop"}
+- text: "open up my home directory"
+  intent: open_path
+  args: {path: "home"}
+- text: "where are my applications"
+  intent: open_path
+  args: {path: "applications"}
+- text: "open the pictures folder"
+  intent: open_path
+  args: {path: "pictures"}
+- text: "go to my movies folder"
+  intent: open_path
+  args: {path: "movies"}
+- text: "open the downloads directory"
+  intent: open_path
+  args: {path: "downloads"}
+
+# -- folder-vs-app disambiguation (eval: "Open applications folder." -> open_app) --------
+# The word "folder"/"directory" means open_path even when the name matches an app.
+- text: "open the applications folder"
+  intent: open_path
+  args: {path: "applications"}
+- text: "open my applications directory"
+  intent: open_path
+  args: {path: "applications"}
+- text: "open my music directory"
+  intent: open_path
+  args: {path: "music"}
+- text: "open the documents folder"
+  intent: open_path
+  args: {path: "documents"}
+- text: "open the downloads folder please"
+  intent: open_path
+  args: {path: "downloads"}
+- text: "open the desktop folder"
+  intent: open_path
+  args: {path: "desktop"}
+- text: "open the pictures directory"
+  intent: open_path
+  args: {path: "pictures"}
+
+# -- filling thin coverage: "home" and "movies" had only 2 examples each --------------
+- text: "go to my home directory"
+  intent: open_path
+  args: {path: "home"}
+- text: "open my home folder"
+  intent: open_path
+  args: {path: "home"}
+- text: "take me home"
+  intent: open_path
+  args: {path: "home"}
+- text: "open the movies folder"
+  intent: open_path
+  args: {path: "movies"}
+- text: "show me my movies"
+  intent: open_path
+  args: {path: "movies"}
+- text: "open my movies directory"
+  intent: open_path
+  args: {path: "movies"}

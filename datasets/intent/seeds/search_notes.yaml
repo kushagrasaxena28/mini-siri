@@ -1,0 +1,139 @@
+# provenance: llm_draft -- pending human spot-check.
+- text: "what did I note about the encoder"
+  intent: search_notes
+  args: {query: "encoder"}
+- text: "search my notes for cache config"
+  intent: search_notes
+  args: {query: "cache config"}
+- text: "what did I say about the meeting"
+  intent: search_notes
+  args: {query: "meeting"}
+- text: "find my note about the wifi password"
+  intent: search_notes
+  args: {query: "wifi password"}
+- text: "do I have any notes about Sarah"
+  intent: search_notes
+  args: {query: "Sarah"}
+- text: "what was that note about the flight"
+  intent: search_notes
+  args: {query: "flight"}
+- text: "search notes for dentist"
+  intent: search_notes
+  args: {query: "dentist"}
+- text: "what did I note yesterday about the deploy"
+  intent: search_notes
+  args: {query: "deploy"}
+- text: "look up my note about the budget"
+  intent: search_notes
+  args: {query: "budget"}
+- text: "did I write anything about the vad threshold"
+  intent: search_notes
+  args: {query: "vad threshold"}
+- text: "find notes about the report"
+  intent: search_notes
+  args: {query: "report"}
+- text: "what do my notes say about the passport"
+  intent: search_notes
+  args: {query: "passport"}
+
+# -- filler-heavy / additional coverage ---------------------------------------------
+- text: "um what did I note about the cache"
+  intent: search_notes
+  args: {query: "cache"}
+- text: "check my notes for the API key"
+  intent: search_notes
+  args: {query: "API key"}
+- text: "did I note anything about the server restart"
+  intent: search_notes
+  args: {query: "server restart"}
+- text: "pull up my note about the timesheet"
+  intent: search_notes
+  args: {query: "timesheet"}
+- text: "what do I have written down about latency"
+  intent: search_notes
+  args: {query: "latency"}
+- text: "search for notes about the pull request"
+  intent: search_notes
+  args: {query: "pull request"}
+- text: "find what I wrote about the streaming numbers"
+  intent: search_notes
+  args: {query: "streaming numbers"}
+- text: "look through my notes for the landlord"
+  intent: search_notes
+  args: {query: "landlord"}
+
+# -- question forms (eval: "Did I note anything about X?" -> unknown) ------------------
+# A question about MY OWN notes is a search, not chatter.
+- text: "did I note anything about the deploy"
+  intent: search_notes
+  args: {query: "deploy"}
+- text: "did I write anything about the encoder"
+  intent: search_notes
+  args: {query: "encoder"}
+- text: "have I got a note about the budget"
+  intent: search_notes
+  args: {query: "budget"}
+- text: "do I have any notes on the cache config"
+  intent: search_notes
+  args: {query: "cache config"}
+- text: "did I save anything about the API key"
+  intent: search_notes
+  args: {query: "API key"}
+- text: "was there a note about the meeting"
+  intent: search_notes
+  args: {query: "meeting"}
+- text: "what did I write about latency"
+  intent: search_notes
+  args: {query: "latency"}
+- text: "anything in my notes about the server"
+  intent: search_notes
+  args: {query: "server"}
+- text: "did I note down the wifi password"
+  intent: search_notes
+  args: {query: "wifi password"}
+
+# search_notes vs find_file: both are "look for something", and the model started
+# collapsing them. NOTES live in Notes.app; FILES live on disk. These are the
+# phrasings that flipped to find_file on held-out data.
+- text: "look through my notes for anything about Priya"
+  intent: search_notes
+  args: {query: "Priya"}
+- text: "look through my notes for the spare key"
+  intent: search_notes
+  args: {query: "spare key"}
+- text: "search my notes for the boiler service"
+  intent: search_notes
+  args: {query: "boiler service"}
+- text: "check my notes for anything about the visa"
+  intent: search_notes
+  args: {query: "visa"}
+- text: "go through my notes for the parking permit"
+  intent: search_notes
+  args: {query: "parking permit"}
+- text: "anything in my notes about the invoice"
+  intent: search_notes
+  args: {query: "invoice"}
+
+# -- the word "notes" is not a search term ---------------------------------------
+# Live testing: "Can you search for notes chapter one?" produced
+# query="notes chapter one". Every note matches the word "notes", so the search
+# returned seventeen results and read out an unrelated one. The query is what to
+# look FOR, never the word "notes" itself.
+- text: "can you search for notes chapter one"
+  intent: search_notes
+  args: {query: "chapter one"}
+- text: "can you check for chapter one in notes"
+  intent: search_notes
+  args: {query: "chapter one"}
+- text: "search notes for the onboarding doc"
+  intent: search_notes
+  args: {query: "onboarding doc"}
+- text: "can you look in notes for the recipe"
+  intent: search_notes
+  args: {query: "recipe"}
+- text: "search my notes for notes about the migration"
+  intent: search_notes
+  args: {query: "migration"}
+- text: "can you find in my notes the address"
+  intent: search_notes
+  args: {query: "address"}

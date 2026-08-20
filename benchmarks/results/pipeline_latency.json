@@ -1,0 +1,399 @@
+{
+  "repeats": 5,
+  "tts": true,
+  "load_ms": {
+    "asr": 296.48224997799844,
+    "vad": 37.43750008288771,
+    "slm": 1382.4695829534903,
+    "executor": 0.01695798709988594,
+    "tts": 5172.94070799835
+  },
+  "stages": [
+    {
+      "stage": "endpoint",
+      "n": 40,
+      "best_ms": 288.0,
+      "median_ms": 288.0,
+      "mean_ms": 288.0,
+      "p95_ms": 288.0,
+      "worst_ms": 288.0
+    },
+    {
+      "stage": "asr",
+      "n": 40,
+      "best_ms": 0.0003330642357468605,
+      "median_ms": 0.0004584435373544693,
+      "mean_ms": 0.000488580553792417,
+      "p95_ms": 0.0007080379873514175,
+      "worst_ms": 0.00108394306153059
+    },
+    {
+      "stage": "slm",
+      "n": 40,
+      "best_ms": 208.98979203775525,
+      "median_ms": 279.7406875179149,
+      "mean_ms": 280.0283385091461,
+      "p95_ms": 369.1998339490965,
+      "worst_ms": 370.10408309288323
+    },
+    {
+      "stage": "validate",
+      "n": 40,
+      "best_ms": 0.024707987904548645,
+      "median_ms": 0.029520480893552303,
+      "mean_ms": 0.032061434467323124,
+      "p95_ms": 0.056165968999266624,
+      "worst_ms": 0.06870797369629145
+    },
+    {
+      "stage": "exec",
+      "n": 40,
+      "best_ms": 0.0085409265011549,
+      "median_ms": 0.09658397175371647,
+      "mean_ms": 0.1778510690201074,
+      "p95_ms": 1.1794170131906867,
+      "worst_ms": 1.4632090460509062
+    },
+    {
+      "stage": "tts",
+      "n": 40,
+      "best_ms": 0.0,
+      "median_ms": 6.0834165,
+      "mean_ms": 7.717951050000001,
+      "p95_ms": 18.136083,
+      "worst_ms": 20.144042
+    },
+    {
+      "stage": "e2e",
+      "n": 40,
+      "best_ms": 497.0353760868311,
+      "median_ms": 576.1198739813054,
+      "mean_ms": 575.9566906431874,
+      "p95_ms": 674.3245009946568,
+      "worst_ms": 676.0547500901105
+    }
+  ],
+  "turns": [
+    {
+      "clip": "timer",
+      "ok": true,
+      "text": "Set a timer for ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 640.6994569428446
+    },
+    {
+      "clip": "open_app",
+      "ok": true,
+      "text": "Open terminal.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 497.48358508758247
+    },
+    {
+      "clip": "volume",
+      "ok": true,
+      "text": "Turn the volume down.",
+      "intent": "set_volume",
+      "correct": true,
+      "e2e_ms": 551.2201260026917
+    },
+    {
+      "clip": "media",
+      "ok": true,
+      "text": "Posed music.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 497.0353760868311
+    },
+    {
+      "clip": "time",
+      "ok": true,
+      "text": "What time is it?",
+      "intent": "get_time",
+      "correct": true,
+      "e2e_ms": 526.9224578920634
+    },
+    {
+      "clip": "note",
+      "ok": true,
+      "text": "Note check the cash config tomorrow.",
+      "intent": "search_notes",
+      "correct": false,
+      "e2e_ms": 588.0380840539453
+    },
+    {
+      "clip": "pause_mid",
+      "ok": true,
+      "text": "Ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 655.1249170298886
+    },
+    {
+      "clip": "pause_mid2",
+      "ok": true,
+      "text": "What did I note about?",
+      "intent": "search_notes",
+      "correct": true,
+      "e2e_ms": 579.3394989850211
+    },
+    {
+      "clip": "timer",
+      "ok": true,
+      "text": "Set a timer for ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 660.8840418856709
+    },
+    {
+      "clip": "open_app",
+      "ok": true,
+      "text": "Open terminal.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 502.170751045458
+    },
+    {
+      "clip": "volume",
+      "ok": true,
+      "text": "Turn the volume down.",
+      "intent": "set_volume",
+      "correct": true,
+      "e2e_ms": 570.2273339523332
+    },
+    {
+      "clip": "media",
+      "ok": true,
+      "text": "Posed music.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 502.34329205658287
+    },
+    {
+      "clip": "time",
+      "ok": true,
+      "text": "What time is it?",
+      "intent": "get_time",
+      "correct": true,
+      "e2e_ms": 522.9405840145616
+    },
+    {
+      "clip": "note",
+      "ok": true,
+      "text": "Note check the cash config tomorrow.",
+      "intent": "search_notes",
+      "correct": false,
+      "e2e_ms": 591.0985829988153
+    },
+    {
+      "clip": "pause_mid",
+      "ok": true,
+      "text": "Ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 653.5383331054034
+    },
+    {
+      "clip": "pause_mid2",
+      "ok": true,
+      "text": "What did I note about?",
+      "intent": "search_notes",
+      "correct": true,
+      "e2e_ms": 583.6423339880513
+    },
+    {
+      "clip": "timer",
+      "ok": true,
+      "text": "Set a timer for ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 654.7884590195268
+    },
+    {
+      "clip": "open_app",
+      "ok": true,
+      "text": "Open terminal.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 504.6065420024097
+    },
+    {
+      "clip": "volume",
+      "ok": true,
+      "text": "Turn the volume down.",
+      "intent": "set_volume",
+      "correct": true,
+      "e2e_ms": 566.1686260984328
+    },
+    {
+      "clip": "media",
+      "ok": true,
+      "text": "Posed music.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 505.78020705096424
+    },
+    {
+      "clip": "time",
+      "ok": true,
+      "text": "What time is it?",
+      "intent": "get_time",
+      "correct": true,
+      "e2e_ms": 525.5393748333561
+    },
+    {
+      "clip": "note",
+      "ok": true,
+      "text": "Note check the cash config tomorrow.",
+      "intent": "search_notes",
+      "correct": false,
+      "e2e_ms": 584.7401250965532
+    },
+    {
+      "clip": "pause_mid",
+      "ok": true,
+      "text": "Ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 655.0567080110833
+    },
+    {
+      "clip": "pause_mid2",
+      "ok": true,
+      "text": "What did I note about?",
+      "intent": "search_notes",
+      "correct": true,
+      "e2e_ms": 588.2327500563009
+    },
+    {
+      "clip": "timer",
+      "ok": true,
+      "text": "Set a timer for ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 668.4710440087883
+    },
+    {
+      "clip": "open_app",
+      "ok": true,
+      "text": "Open terminal.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 509.28091705963016
+    },
+    {
+      "clip": "volume",
+      "ok": true,
+      "text": "Turn the volume down.",
+      "intent": "set_volume",
+      "correct": true,
+      "e2e_ms": 565.9164992378833
+    },
+    {
+      "clip": "media",
+      "ok": true,
+      "text": "Posed music.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 507.9609570670873
+    },
+    {
+      "clip": "time",
+      "ok": true,
+      "text": "What time is it?",
+      "intent": "get_time",
+      "correct": true,
+      "e2e_ms": 541.5022080510004
+    },
+    {
+      "clip": "note",
+      "ok": true,
+      "text": "Note check the cash config tomorrow.",
+      "intent": "search_notes",
+      "correct": false,
+      "e2e_ms": 594.9522488883064
+    },
+    {
+      "clip": "pause_mid",
+      "ok": true,
+      "text": "Ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 657.1626251511977
+    },
+    {
+      "clip": "pause_mid2",
+      "ok": true,
+      "text": "What did I note about?",
+      "intent": "search_notes",
+      "correct": true,
+      "e2e_ms": 601.8377910493911
+    },
+    {
+      "clip": "timer",
+      "ok": true,
+      "text": "Set a timer for ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 676.0547500901105
+    },
+    {
+      "clip": "open_app",
+      "ok": true,
+      "text": "Open terminal.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 515.1239159163088
+    },
+    {
+      "clip": "volume",
+      "ok": true,
+      "text": "Turn the volume down.",
+      "intent": "set_volume",
+      "correct": true,
+      "e2e_ms": 572.9002489775897
+    },
+    {
+      "clip": "media",
+      "ok": true,
+      "text": "Posed music.",
+      "intent": "unknown",
+      "correct": false,
+      "e2e_ms": 513.6742070894688
+    },
+    {
+      "clip": "time",
+      "ok": true,
+      "text": "What time is it?",
+      "intent": "get_time",
+      "correct": true,
+      "e2e_ms": 538.444958982986
+    },
+    {
+      "clip": "note",
+      "ok": true,
+      "text": "Note check the cash config tomorrow.",
+      "intent": "search_notes",
+      "correct": false,
+      "e2e_ms": 589.9559568568617
+    },
+    {
+      "clip": "pause_mid",
+      "ok": true,
+      "text": "Ten minutes.",
+      "intent": "set_timer",
+      "correct": true,
+      "e2e_ms": 674.3245009946568
+    },
+    {
+      "clip": "pause_mid2",
+      "ok": true,
+      "text": "What did I note about?",
+      "intent": "search_notes",
+      "correct": true,
+      "e2e_ms": 603.0832490098551
+    }
+  ],
+  "mlx_peak_gb": 3.765958563
+}

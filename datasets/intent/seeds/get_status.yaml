@@ -1,0 +1,109 @@
+# One intent, one enum-checked reading. Grouping battery/wifi/bluetooth/storage/
+# chip/device/date/day under get_status{item} rather than eight separate intents
+# keeps the class count low for a 1.7B model and the output token count flat.
+#
+# DATE AND DAY LIVE HERE, NOT IN get_time. Live testing found "What is the day
+# right now?" answered "It's 7:45 P M." -- silently wrong, which is the worst
+# failure class in this project.
+
+# -- battery ------------------------------------------------------------------
+- text: "what is my laptop's battery"
+  intent: get_status
+  args: {item: "battery"}
+- text: "how much battery do I have left"
+  intent: get_status
+  args: {item: "battery"}
+- text: "what's my battery at"
+  intent: get_status
+  args: {item: "battery"}
+- text: "battery status"
+  intent: get_status
+  args: {item: "battery"}
+- text: "is my laptop charging"
+  intent: get_status
+  args: {item: "battery"}
+- text: "how much charge is left"
+  intent: get_status
+  args: {item: "battery"}
+
+# -- wifi ---------------------------------------------------------------------
+- text: "is my wifi on"
+  intent: get_status
+  args: {item: "wifi"}
+- text: "is wifi turned on"
+  intent: get_status
+  args: {item: "wifi"}
+- text: "check my wifi"
+  intent: get_status
+  args: {item: "wifi"}
+- text: "am I connected to wifi"
+  intent: get_status
+  args: {item: "wifi"}
+
+# -- bluetooth ----------------------------------------------------------------
+- text: "is my bluetooth on"
+  intent: get_status
+  args: {item: "bluetooth"}
+- text: "is bluetooth turned on"
+  intent: get_status
+  args: {item: "bluetooth"}
+- text: "check bluetooth"
+  intent: get_status
+  args: {item: "bluetooth"}
+
+# -- storage ------------------------------------------------------------------
+- text: "how much storage is left"
+  intent: get_status
+  args: {item: "storage"}
+- text: "how much disk space do I have"
+  intent: get_status
+  args: {item: "storage"}
+- text: "how much free space is there"
+  intent: get_status
+  args: {item: "storage"}
+
+# -- chip and device ----------------------------------------------------------
+- text: "do I have an M one or M one pro chip"
+  intent: get_status
+  args: {item: "chip"}
+- text: "what chip does this have"
+  intent: get_status
+  args: {item: "chip"}
+- text: "what processor is this"
+  intent: get_status
+  args: {item: "chip"}
+- text: "what mac is this"
+  intent: get_status
+  args: {item: "device"}
+- text: "what is this computer called"
+  intent: get_status
+  args: {item: "device"}
+
+# -- date and day: NOT get_time ------------------------------------------------
+- text: "what is the day right now"
+  intent: get_status
+  args: {item: "day"}
+- text: "what day is it"
+  intent: get_status
+  args: {item: "day"}
+- text: "what day of the week is it"
+  intent: get_status
+  args: {item: "day"}
+- text: "is it wednesday"
+  intent: get_status
+  args: {item: "day"}
+- text: "what's today's date"
+  intent: get_status
+  args: {item: "date"}
+- text: "what is the date today"
+  intent: get_status
+  args: {item: "date"}
+- text: "what's the date"
+  intent: get_status
+  args: {item: "date"}
+- text: "is it the nineteenth of august"
+  intent: get_status
+  args: {item: "date"}
+- text: "what month is it"
+  intent: get_status
+  args: {item: "date"}

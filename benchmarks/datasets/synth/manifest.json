@@ -1,0 +1,58 @@
+[
+  {
+    "name": "timer",
+    "file": "timer.wav",
+    "text": "set a timer for ten minutes",
+    "gap_s": 0.0,
+    "duration_s": 3.27
+  },
+  {
+    "name": "open_app",
+    "file": "open_app.wav",
+    "text": "open Terminal",
+    "gap_s": 0.0,
+    "duration_s": 2.67
+  },
+  {
+    "name": "volume",
+    "file": "volume.wav",
+    "text": "turn the volume down",
+    "gap_s": 0.0,
+    "duration_s": 2.87
+  },
+  {
+    "name": "media",
+    "file": "media.wav",
+    "text": "pause the music",
+    "gap_s": 0.0,
+    "duration_s": 2.7
+  },
+  {
+    "name": "time",
+    "file": "time.wav",
+    "text": "what time is it",
+    "gap_s": 0.0,
+    "duration_s": 3.03
+  },
+  {
+    "name": "note",
+    "file": "note.wav",
+    "text": "note check the cache config tomorrow",
+    "gap_s": 0.0,
+    "duration_s": 3.82
+  },
+  {
+    "name": "pause_mid",
+    "file": "pause_mid.wav",
+    "text": "set a timer for ten minutes",
+    "gap_s": 0.6,
+    "duration_s": 4.05
+  },
+  {
+    "name": "pause_mid2",
+    "file": "pause_mid2.wav",
+    "text": "what did I note about the encoder",
+    "gap_s": 0.7,
+    "duration_s": 4.29
+  }
+]

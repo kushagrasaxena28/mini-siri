@@ -1,0 +1,48 @@
+# provenance: llm_draft -- pending human spot-check. No args.
+- text: "what time is it"
+  intent: get_time
+  args: {}
+- text: "what's the time"
+  intent: get_time
+  args: {}
+- text: "can you tell me the time"
+  intent: get_time
+  args: {}
+- text: "do you know what time it is"
+  intent: get_time
+  args: {}
+- text: "hey what time is it right now"
+  intent: get_time
+  args: {}
+- text: "time check"
+  intent: get_time
+  args: {}
+- text: "what time do we have"
+  intent: get_time
+  args: {}
+- text: "tell me the time please"
+  intent: get_time
+  args: {}
+- text: "current time"
+  intent: get_time
+  args: {}
+
+# -- filler-heavy / additional coverage ---------------------------------------------
+- text: "um what time is it"
+  intent: get_time
+  args: {}
+- text: "hey do you have the time"
+  intent: get_time
+  args: {}
+- text: "got the time"
+  intent: get_time
+  args: {}
+- text: "what time is it now"
+  intent: get_time
+  args: {}
+- text: "how late is it"
+  intent: get_time
+  args: {}
+- text: "give me the time"
+  intent: get_time
+  args: {}

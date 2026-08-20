@@ -1,0 +1,105 @@
+# provenance: llm_draft -- pending human spot-check.
+#
+# Added after "Can you open Kushagr underscore resume pdf?" was rejected -- there
+# was no file-search capability at all.
+#
+# THE QUERY IS SEARCH TERMS, NEVER A PATH. The executor runs it through Spotlight
+# scoped to the user's home directory. Labels therefore strip filler ("my", "the",
+# "a file called") and keep the distinctive words, because that is what matches a
+# filename. The validator rejects anything path-shaped as a second line of defence.
+#
+# Distinct from open_path, which opens a FIXED, allowlisted FOLDER.
+
+# -- documents / resumes -------------------------------------------------------
+- text: "find my resume"
+  intent: find_file
+  args: {query: "resume"}
+- text: "find my resume pdf"
+  intent: find_file
+  args: {query: "resume"}
+- text: "can you open my resume"
+  intent: find_file
+  args: {query: "resume"}
+- text: "where is my resume file"
+  intent: find_file
+  args: {query: "resume"}
+- text: "look for my cover letter"
+  intent: find_file
+  args: {query: "cover letter"}
+- text: "find the tax document"
+  intent: find_file
+  args: {query: "tax"}
+- text: "find my passport scan"
+  intent: find_file
+  args: {query: "passport scan"}
+
+# -- by name -------------------------------------------------------------------
+- text: "find a file called budget"
+  intent: find_file
+  args: {query: "budget"}
+- text: "open the file named report"
+  intent: find_file
+  args: {query: "report"}
+- text: "search for a file called invoice"
+  intent: find_file
+  args: {query: "invoice"}
+- text: "find the presentation about onboarding"
+  intent: find_file
+  args: {query: "onboarding"}
+- text: "look for notes dot txt"
+  intent: find_file
+  args: {query: "notes.txt"}
+
+# -- by type -------------------------------------------------------------------
+- text: "find the screenshot from yesterday"
+  intent: find_file
+  args: {query: "screenshot"}
+- text: "find my meeting notes"
+  intent: find_file
+  args: {query: "meeting notes"}
+- text: "where did I save the contract"
+  intent: find_file
+  args: {query: "contract"}
+- text: "find the spreadsheet with the numbers"
+  intent: find_file
+  args: {query: "spreadsheet"}
+- text: "look for the project proposal"
+  intent: find_file
+  args: {query: "proposal"}
+
+# -- filler-heavy / conversational ------------------------------------------------
+- text: "um can you find my resume"
+  intent: find_file
+  args: {query: "resume"}
+- text: "hey where is that budget file"
+  intent: find_file
+  args: {query: "budget"}
+- text: "can you look for a file called timesheet"
+  intent: find_file
+  args: {query: "timesheet"}
+- text: "I need to find the invoice from last month"
+  intent: find_file
+  args: {query: "invoice"}
+- text: "search my files for the design doc"
+  intent: find_file
+  args: {query: "design doc"}
+
+# ASR spells punctuation out as words. "Open annual underscore report dot pdf"
+# produced the query "annual underscore report" -- Spotlight will never match a
+# filename against the literal word "underscore". Spoken punctuation and the
+# extension are not search terms.
+- text: "open annual underscore report dot pdf"
+  intent: find_file
+  args: {query: "annual report"}
+- text: "find my resume dot pdf"
+  intent: find_file
+  args: {query: "resume"}
+- text: "open budget underscore twenty twenty four dot xlsx"
+  intent: find_file
+  args: {query: "budget"}
+- text: "find the file called notes dot txt"
+  intent: find_file
+  args: {query: "notes"}
+- text: "open the invoice dot pdf"
+  intent: find_file
+  args: {query: "invoice"}

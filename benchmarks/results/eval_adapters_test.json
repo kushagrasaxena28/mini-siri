@@ -1,0 +1,100 @@
+{
+  "model": "adapters",
+  "prompt": "short",
+  "test": "datasets/intent/test.jsonl",
+  "n": 363,
+  "schema_valid": 357,
+  "intent_acc": 349,
+  "args_acc": 346,
+  "exact_match": 346,
+  "unknown_precision": 0.8846153846153846,
+  "unknown_recall": 0.8846153846153846,
+  "latency_median_ms": 277.31825003866106,
+  "errors": [
+    {
+      "transcript": "Add a note that call the plumber tomorrow.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"call the plumber\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"call the plumber tomorrow\"}}"
+    },
+    {
+      "transcript": "Note call the plumber tomorrow.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"call the plumber\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"call the plumber tomorrow\"}}"
+    },
+    {
+      "transcript": "Exit Messages.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Messages\"}}"
+    },
+    {
+      "transcript": "Wake me at noon.",
+      "got": "REJECTED: hour 0 with a meridiem must be 1..12",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":12,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Locate my passport scan.",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"passport\"}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"passport scan\"}}"
+    },
+    {
+      "transcript": "What month is it?",
+      "got": "REJECTED: get_status item must be one of ['battery', 'bluetooth', 'chip', 'date', 'day', 'device', 'storage', 'wifi']",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"date\"}}"
+    },
+    {
+      "transcript": "Open audio underscore lab.",
+      "got": "REJECTED: app 'Audio Lab' not found on this machine",
+      "want": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"audio_lab\"}}"
+    },
+    {
+      "transcript": "Half hour timer.",
+      "got": "REJECTED: timer duration 108000s out of range 1..86400",
+      "want": "{\"intent\":\"set_timer\",\"args\":{\"value\":30,\"unit\":\"minutes\"}}"
+    },
+    {
+      "transcript": "Mute.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"set_volume\",\"args\":{\"direction\":\"mute\"}}"
+    },
+    {
+      "transcript": "Write this down.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the number is 5\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Remind me at ninety nine o'clock.",
+      "got": "REJECTED: reminder hour 99 out of range 0..23",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Make it louder.",
+      "got": "{\"intent\":\"set_volume\",\"args\":{\"direction\":\"up\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Open downloads and open documents.",
+      "got": "{\"intent\":\"open_path\",\"args\":{\"path\":\"~/Downloads\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Close.",
+      "got": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Reminders\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Set a timer for zero minutes.",
+      "got": "REJECTED: timer duration 0s out of range 1..86400",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "What's the date today?",
+      "got": "{\"intent\":\"get_status\",\"args\":{\"item\":\"date\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Search for a document.",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"document\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    }
+  ]
+}

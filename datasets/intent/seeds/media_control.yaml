@@ -1,0 +1,174 @@
+# provenance: llm_draft -- pending human spot-check.
+#
+# action in {play, pause, playpause, next, previous}.
+# Filler-heavy and vague-referent variants are over-represented: zero-shot eval
+# missed "um can you skip this" (returned unknown), so "this"/"that"/"it" as the
+# object of a playback verb needs to be learned as a media reference.
+
+# -- pause ------------------------------------------------------------------------
+- text: "pause the music"
+  intent: media_control
+  args: {action: "pause"}
+- text: "pause"
+  intent: media_control
+  args: {action: "pause"}
+- text: "can you pause that"
+  intent: media_control
+  args: {action: "pause"}
+- text: "hey pause"
+  intent: media_control
+  args: {action: "pause"}
+- text: "stop the music"
+  intent: media_control
+  args: {action: "pause"}
+- text: "pause it"
+  intent: media_control
+  args: {action: "pause"}
+- text: "um can you pause this"
+  intent: media_control
+  args: {action: "pause"}
+- text: "pause the song"
+  intent: media_control
+  args: {action: "pause"}
+- text: "hold the music"
+  intent: media_control
+  args: {action: "pause"}
+
+# -- play -------------------------------------------------------------------------
+- text: "play the music"
+  intent: media_control
+  args: {action: "play"}
+- text: "play"
+  intent: media_control
+  args: {action: "play"}
+- text: "resume the music"
+  intent: media_control
+  args: {action: "play"}
+- text: "unpause the music"
+  intent: media_control
+  args: {action: "play"}
+- text: "keep playing"
+  intent: media_control
+  args: {action: "play"}
+- text: "start the music again"
+  intent: media_control
+  args: {action: "play"}
+
+# -- next -------------------------------------------------------------------------
+- text: "skip this song"
+  intent: media_control
+  args: {action: "next"}
+- text: "next track"
+  intent: media_control
+  args: {action: "next"}
+- text: "skip to the next song"
+  intent: media_control
+  args: {action: "next"}
+- text: "next song please"
+  intent: media_control
+  args: {action: "next"}
+- text: "um can you skip this"
+  intent: media_control
+  args: {action: "next"}
+- text: "skip it"
+  intent: media_control
+  args: {action: "next"}
+- text: "skip"
+  intent: media_control
+  args: {action: "next"}
+- text: "next"
+  intent: media_control
+  args: {action: "next"}
+- text: "I don't like this one, skip it"
+  intent: media_control
+  args: {action: "next"}
+
+# -- previous ---------------------------------------------------------------------
+- text: "go back a song"
+  intent: media_control
+  args: {action: "previous"}
+- text: "previous track"
+  intent: media_control
+  args: {action: "previous"}
+- text: "go to the previous track"
+  intent: media_control
+  args: {action: "previous"}
+- text: "play the last song again"
+  intent: media_control
+  args: {action: "previous"}
+- text: "back a track"
+  intent: media_control
+  args: {action: "previous"}
+
+# -- playpause --------------------------------------------------------------------
+- text: "play pause"
+  intent: media_control
+  args: {action: "playpause"}
+- text: "toggle playback"
+  intent: media_control
+  args: {action: "playpause"}
+
+# -- filling thin coverage: "playpause" had only 2 examples -------------------------
+- text: "hit play pause"
+  intent: media_control
+  args: {action: "playpause"}
+- text: "toggle play"
+  intent: media_control
+  args: {action: "playpause"}
+- text: "hit the play button"
+  intent: media_control
+  args: {action: "playpause"}
+- text: "just toggle it"
+  intent: media_control
+  args: {action: "playpause"}
+
+# -- "can you play music" declined ----------------------------------------------
+# Live testing: "Can you play music?" returned unknown. "play the music" and "play"
+# were both present; the polite-request wrapper was not, and it is how people
+# actually ask.
+- text: "can you play music"
+  intent: media_control
+  args: {action: "play"}
+- text: "can you play the music"
+  intent: media_control
+  args: {action: "play"}
+- text: "can you play some music"
+  intent: media_control
+  args: {action: "play"}
+- text: "can you resume the music"
+  intent: media_control
+  args: {action: "play"}
+- text: "can you pause the music"
+  intent: media_control
+  args: {action: "pause"}
+- text: "can you pause this"
+  intent: media_control
+  args: {action: "pause"}
+- text: "can you skip this song"
+  intent: media_control
+  args: {action: "next"}
+- text: "can you play the next track"
+  intent: media_control
+  args: {action: "next"}
+- text: "can you go back a song"
+  intent: media_control
+  args: {action: "previous"}
+
+# "Play." and "Resume the music." produced a degenerate repetition loop
+# (playpausepausepause...) rather than a clean action. Short, bare forms need
+# explicit coverage so the model is not guessing between play and playpause.
+- text: "resume"
+  intent: media_control
+  args: {action: "play"}
+- text: "start the music"
+  intent: media_control
+  args: {action: "play"}
+- text: "play it"
+  intent: media_control
+  args: {action: "play"}
+- text: "play music"
+  intent: media_control
+  args: {action: "play"}
+- text: "carry on playing"
+  intent: media_control
+  args: {action: "play"}

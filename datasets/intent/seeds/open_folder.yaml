@@ -1,0 +1,98 @@
+# The counterpart to open_path. open_path handles the eight standard folders;
+# anything else is a NAME to find via Spotlight, scoped to the home directory.
+#
+# Live testing: "Open audio underscore lab" and "Open super thirty folder" both
+# resolved to open_path and were rejected, because a project directory is not a
+# standard folder. Same rule as find_file -- the model supplies a name, never a
+# path, and the validator refuses anything path-shaped.
+
+- text: "open audio underscore lab"
+  intent: open_folder
+  args: {name: "audio_lab"}
+- text: "open the audio lab folder"
+  intent: open_folder
+  args: {name: "audio_lab"}
+- text: "open super thirty folder"
+  intent: open_folder
+  args: {name: "super thirty"}
+- text: "open my projects folder"
+  intent: open_folder
+  args: {name: "projects"}
+- text: "open the src folder"
+  intent: open_folder
+  args: {name: "src"}
+- text: "open the screenshots folder"
+  intent: open_folder
+  args: {name: "screenshots"}
+- text: "can you open the invoices folder"
+  intent: open_folder
+  args: {name: "invoices"}
+- text: "open my thesis folder"
+  intent: open_folder
+  args: {name: "thesis"}
+- text: "find the folder called backups"
+  intent: open_folder
+  args: {name: "backups"}
+- text: "open the folder called datasets"
+  intent: open_folder
+  args: {name: "datasets"}
+- text: "open my resume folder"
+  intent: open_folder
+  args: {name: "resume"}
+- text: "open the work folder"
+  intent: open_folder
+  args: {name: "work"}
+
+# Thin at 12 seeds and scored 0/2 held-out: "Open my thesis folder" went to
+# find_file and "Open the work folder" to open_path. It competes with two
+# well-represented neighbours (open_path 34, find_file 27), so it needs enough
+# examples to hold its own. The distinguishing signal is the word "folder" plus
+# a name that is NOT one of the eight standard ones.
+- text: "open the archive folder"
+  intent: open_folder
+  args: {name: "archive"}
+- text: "open my photos backup folder"
+  intent: open_folder
+  args: {name: "photos backup"}
+- text: "can you open the reports folder"
+  intent: open_folder
+  args: {name: "reports"}
+- text: "open the folder called notes"
+  intent: open_folder
+  args: {name: "notes"}
+- text: "open the tax folder"
+  intent: open_folder
+  args: {name: "tax"}
+- text: "open my college folder"
+  intent: open_folder
+  args: {name: "college"}
+- text: "take me to the builds folder"
+  intent: open_folder
+  args: {name: "builds"}
+- text: "open the folder named scripts"
+  intent: open_folder
+  args: {name: "scripts"}
+- text: "open my recipes folder"
+  intent: open_folder
+  args: {name: "recipes"}
+- text: "open the client folder"
+  intent: open_folder
+  args: {name: "client"}
+- text: "open the folder called experiments"
+  intent: open_folder
+  args: {name: "experiments"}
+- text: "open my travel folder"
+  intent: open_folder
+  args: {name: "travel"}
+- text: "open the logs folder"
+  intent: open_folder
+  args: {name: "logs"}
+- text: "open my invoices folder please"
+  intent: open_folder
+  args: {name: "invoices"}
+- text: "open the folder called models"
+  intent: open_folder
+  args: {name: "models"}
+- text: "open my side project folder"
+  intent: open_folder
+  args: {name: "side project"}

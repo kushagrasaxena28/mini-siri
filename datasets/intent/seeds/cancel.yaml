@@ -1,0 +1,78 @@
+# provenance: llm_draft -- pending human spot-check. No args.
+- text: "never mind"
+  intent: cancel
+  args: {}
+- text: "cancel that"
+  intent: cancel
+  args: {}
+- text: "forget it"
+  intent: cancel
+  args: {}
+- text: "stop"
+  intent: cancel
+  args: {}
+- text: "cancel the timer"
+  intent: cancel
+  args: {}
+- text: "actually never mind"
+  intent: cancel
+  args: {}
+- text: "nah forget that"
+  intent: cancel
+  args: {}
+- text: "cancel"
+  intent: cancel
+  args: {}
+- text: "wait, cancel that"
+  intent: cancel
+  args: {}
+- text: "undo that"
+  intent: cancel
+  args: {}
+
+# -- filler-heavy / additional coverage ---------------------------------------------
+- text: "um never mind"
+  intent: cancel
+  args: {}
+- text: "actually forget it"
+  intent: cancel
+  args: {}
+- text: "no wait, cancel"
+  intent: cancel
+  args: {}
+- text: "scratch that"
+  intent: cancel
+  args: {}
+- text: "stop the timer"
+  intent: cancel
+  args: {}
+- text: "cancel my timer"
+  intent: cancel
+  args: {}
+- text: "drop it"
+  intent: cancel
+  args: {}
+
+# -- "stop" disambiguation (eval: "Stop." and "Stop the timer." -> media_control) ------
+# Bare "stop" and stopping a TIMER are cancel; stopping MUSIC is media_control.
+- text: "stop it"
+  intent: cancel
+  args: {}
+- text: "stop that"
+  intent: cancel
+  args: {}
+- text: "stop the countdown"
+  intent: cancel
+  args: {}
+- text: "kill the timer"
+  intent: cancel
+  args: {}
+- text: "cancel it"
+  intent: cancel
+  args: {}
+- text: "abort"
+  intent: cancel
+  args: {}
+- text: "no stop"
+  intent: cancel
+  args: {}

@@ -1,0 +1,219 @@
+# provenance: llm_draft -- pending human spot-check.
+# app_name values must exactly match keys the executor can resolve.
+- text: "open Terminal"
+  intent: open_app
+  args: {app_name: "Terminal"}
+- text: "can you open terminal for me"
+  intent: open_app
+  args: {app_name: "Terminal"}
+- text: "launch Safari"
+  intent: open_app
+  args: {app_name: "Safari"}
+- text: "open up Chrome"
+  intent: open_app
+  args: {app_name: "Google Chrome"}
+- text: "open Finder"
+  intent: open_app
+  args: {app_name: "Finder"}
+- text: "hey open Notes"
+  intent: open_app
+  args: {app_name: "Notes"}
+- text: "open my calendar"
+  intent: open_app
+  args: {app_name: "Calendar"}
+- text: "open Mail"
+  intent: open_app
+  args: {app_name: "Mail"}
+- text: "can you launch Music"
+  intent: open_app
+  args: {app_name: "Music"}
+- text: "open Spotify"
+  intent: open_app
+  args: {app_name: "Spotify"}
+- text: "open Slack"
+  intent: open_app
+  args: {app_name: "Slack"}
+- text: "launch Messages"
+  intent: open_app
+  args: {app_name: "Messages"}
+- text: "open Preview"
+  intent: open_app
+  args: {app_name: "Preview"}
+- text: "open system settings"
+  intent: open_app
+  args: {app_name: "System Settings"}
+- text: "open activity monitor"
+  intent: open_app
+  args: {app_name: "Activity Monitor"}
+- text: "open VS Code"
+  intent: open_app
+  args: {app_name: "Visual Studio Code"}
+- text: "launch vscode"
+  intent: open_app
+  args: {app_name: "Visual Studio Code"}
+- text: "open iTerm"
+  intent: open_app
+  args: {app_name: "iTerm"}
+- text: "could you open Google Chrome"
+  intent: open_app
+  args: {app_name: "Google Chrome"}
+- text: "open the terminal app"
+  intent: open_app
+  args: {app_name: "Terminal"}
+- text: "um open Safari please"
+  intent: open_app
+  args: {app_name: "Safari"}
+- text: "pull up Slack"
+  intent: open_app
+  args: {app_name: "Slack"}
+
+# -- filler-heavy / additional coverage ---------------------------------------------
+- text: "um can you open Terminal"
+  intent: open_app
+  args: {app_name: "Terminal"}
+- text: "hey open up Safari for me"
+  intent: open_app
+  args: {app_name: "Safari"}
+- text: "get me into VS Code"
+  intent: open_app
+  args: {app_name: "Visual Studio Code"}
+- text: "start Spotify"
+  intent: open_app
+  args: {app_name: "Spotify"}
+- text: "bring up Finder"
+  intent: open_app
+  args: {app_name: "Finder"}
+- text: "open the Music app"
+  intent: open_app
+  args: {app_name: "Music"}
+- text: "fire up iTerm"
+  intent: open_app
+  args: {app_name: "iTerm"}
+- text: "open Messages please"
+  intent: open_app
+  args: {app_name: "Messages"}
+- text: "can you launch Preview"
+  intent: open_app
+  args: {app_name: "Preview"}
+- text: "open up my mail"
+  intent: open_app
+  args: {app_name: "Mail"}
+- text: "show me activity monitor"
+  intent: open_app
+  args: {app_name: "Activity Monitor"}
+- text: "open settings"
+  intent: open_app
+  args: {app_name: "System Settings"}
+
+# -- open-vs-close disambiguation ------------------------------------------------------
+# Paired against close_app.yaml so "open X" and "turn off X" are learned as
+# OPPOSITES rather than both collapsing to open_app.
+- text: "open WhatsApp"
+  intent: open_app
+  args: {app_name: "WhatsApp"}
+- text: "open WhatsApp for me"
+  intent: open_app
+  args: {app_name: "WhatsApp"}
+- text: "can you open Apple Music"
+  intent: open_app
+  args: {app_name: "Music"}
+- text: "launch WhatsApp"
+  intent: open_app
+  args: {app_name: "WhatsApp"}
+- text: "start Terminal"
+  intent: open_app
+  args: {app_name: "Terminal"}
+
+# -- APP vs FOLDER, the confusion found in live testing --------------------------
+# "Can you open notes?" resolved to open_path{"notes"} and was rejected, twice.
+# open_path carries fourteen "open X" examples against three "can you open X" here,
+# so the phrasing itself pulled toward folders. Notes/Music/Preview are the
+# dangerous names because each is also a plausible place.
+- text: "can you open notes"
+  intent: open_app
+  args: {app_name: "Notes"}
+- text: "can you open notes for me"
+  intent: open_app
+  args: {app_name: "Notes"}
+- text: "open notes"
+  intent: open_app
+  args: {app_name: "Notes"}
+- text: "open the notes app"
+  intent: open_app
+  args: {app_name: "Notes"}
+- text: "can you open the calendar"
+  intent: open_app
+  args: {app_name: "Calendar"}
+- text: "can you open mail"
+  intent: open_app
+  args: {app_name: "Mail"}
+- text: "can you open messages"
+  intent: open_app
+  args: {app_name: "Messages"}
+- text: "can you open finder"
+  intent: open_app
+  args: {app_name: "Finder"}
+- text: "can you open preview"
+  intent: open_app
+  args: {app_name: "Preview"}
+- text: "can you open safari for me"
+  intent: open_app
+  args: {app_name: "Safari"}
+- text: "can you open spotify please"
+  intent: open_app
+  args: {app_name: "Spotify"}
+- text: "can you open uh apple music"
+  intent: open_app
+  args: {app_name: "Music"}
+- text: "can you open activity monitor"
+  intent: open_app
+  args: {app_name: "Activity Monitor"}
+
+# -- from live testing: bare app name, and apps beyond the old fixed list ------
+# App names now resolve against what is actually installed, so the training data
+# should cover ordinary built-ins rather than only the twenty that used to be
+# hardcoded.
+- text: "open contacts"
+  intent: open_app
+  args: {app_name: "Contacts"}
+- text: "can you open contacts for me"
+  intent: open_app
+  args: {app_name: "Contacts"}
+- text: "open apple music for me"
+  intent: open_app
+  args: {app_name: "Music"}
+- text: "open reminders"
+  intent: open_app
+  args: {app_name: "Reminders"}
+- text: "open photos"
+  intent: open_app
+  args: {app_name: "Photos"}
+- text: "open maps"
+  intent: open_app
+  args: {app_name: "Maps"}
+- text: "open chess"
+  intent: open_app
+  args: {app_name: "Chess"}
+# "Can you open preview?" and "Open the terminal app." both declined held-out.
+# The polite wrapper and the trailing word "app" should not be load-bearing.
+- text: "open the safari app"
+  intent: open_app
+  args: {app_name: "Safari"}
+- text: "open the spotify app"
+  intent: open_app
+  args: {app_name: "Spotify"}
+- text: "can you open the preview app"
+  intent: open_app
+  args: {app_name: "Preview"}
+- text: "can you open whatsapp for me"
+  intent: open_app
+  args: {app_name: "WhatsApp"}
+- text: "can you open slack"
+  intent: open_app
+  args: {app_name: "Slack"}
+- text: "can you open the calendar app"
+  intent: open_app
+  args: {app_name: "Calendar"}
+- text: "please open terminal"
+  intent: open_app
+  args: {app_name: "Terminal"}

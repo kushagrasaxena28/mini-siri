@@ -1,0 +1,146 @@
+# provenance: llm_draft -- pending human spot-check.
+#
+# Added after a live session where "Turn off WhatsApp?" OPENED WhatsApp. With no
+# close intent to reach for, the model forced the request into the nearest thing
+# it knew. Doing the opposite of what was asked is worse than declining, so the
+# vocabulary here is deliberately wide: close / quit / turn off / shut / exit /
+# kill / get rid of / stop.
+#
+# app_name uses the SAME allowlist as open_app -- we only ever quit apps we would
+# also open.
+
+# -- "close X" ---------------------------------------------------------------
+- text: "close WhatsApp"
+  intent: close_app
+  args: {app_name: "WhatsApp"}
+- text: "close Terminal"
+  intent: close_app
+  args: {app_name: "Terminal"}
+- text: "close Safari"
+  intent: close_app
+  args: {app_name: "Safari"}
+- text: "close Spotify"
+  intent: close_app
+  args: {app_name: "Spotify"}
+- text: "can you close Slack"
+  intent: close_app
+  args: {app_name: "Slack"}
+- text: "close the Music app"
+  intent: close_app
+  args: {app_name: "Music"}
+
+# -- "quit X" ----------------------------------------------------------------
+- text: "quit Spotify"
+  intent: close_app
+  args: {app_name: "Spotify"}
+- text: "quit Chrome"
+  intent: close_app
+  args: {app_name: "Google Chrome"}
+- text: "quit Notes"
+  intent: close_app
+  args: {app_name: "Notes"}
+- text: "please quit Mail"
+  intent: close_app
+  args: {app_name: "Mail"}
+
+# -- "turn off X" (the exact phrasing that misfired) ---------------------------
+- text: "turn off WhatsApp"
+  intent: close_app
+  args: {app_name: "WhatsApp"}
+- text: "turn off Spotify"
+  intent: close_app
+  args: {app_name: "Spotify"}
+- text: "can you turn off Terminal"
+  intent: close_app
+  args: {app_name: "Terminal"}
+- text: "turn off Messages"
+  intent: close_app
+  args: {app_name: "Messages"}
+
+# -- "shut / exit / kill / stop" ------------------------------------------------
+- text: "shut down Safari"
+  intent: close_app
+  args: {app_name: "Safari"}
+- text: "exit VS Code"
+  intent: close_app
+  args: {app_name: "Visual Studio Code"}
+- text: "kill Activity Monitor"
+  intent: close_app
+  args: {app_name: "Activity Monitor"}
+- text: "get rid of Preview"
+  intent: close_app
+  args: {app_name: "Preview"}
+- text: "stop Spotify"
+  intent: close_app
+  args: {app_name: "Spotify"}
+- text: "close out of Finder"
+  intent: close_app
+  args: {app_name: "Finder"}
+
+# -- filler-heavy ----------------------------------------------------------------
+- text: "um can you close WhatsApp"
+  intent: close_app
+  args: {app_name: "WhatsApp"}
+- text: "hey close Terminal for me"
+  intent: close_app
+  args: {app_name: "Terminal"}
+- text: "uh quit Safari please"
+  intent: close_app
+  args: {app_name: "Safari"}
+
+# -- "close notes" invented an intent -------------------------------------------
+# Live testing: "Can you close notes?" emitted {"intent":"close_path"}, which does
+# not exist and was rejected. Same app-vs-folder pull as open_app, but the failure
+# is worse: an intent name outside the enum rather than a wrong-but-real one.
+- text: "can you close notes"
+  intent: close_app
+  args: {app_name: "Notes"}
+- text: "close notes"
+  intent: close_app
+  args: {app_name: "Notes"}
+- text: "can you close the notes app"
+  intent: close_app
+  args: {app_name: "Notes"}
+- text: "can you close google chrome"
+  intent: close_app
+  args: {app_name: "Google Chrome"}
+- text: "can you close apple music"
+  intent: close_app
+  args: {app_name: "Music"}
+- text: "can you close calendar"
+  intent: close_app
+  args: {app_name: "Calendar"}
+- text: "can you close mail"
+  intent: close_app
+  args: {app_name: "Mail"}
+- text: "can you close preview"
+  intent: close_app
+  args: {app_name: "Preview"}
+
+# -- from live testing: bare app name without the word "app" -------------------
+# "Close contacts." declined, but "Close contacts app." worked. The trailing word
+# "app" should not be load-bearing -- people drop it.
+- text: "close contacts"
+  intent: close_app
+  args: {app_name: "Contacts"}
+- text: "close activity monitor"
+  intent: close_app
+  args: {app_name: "Activity Monitor"}
+- text: "close music"
+  intent: close_app
+  args: {app_name: "Music"}
+- text: "close apple music for me"
+  intent: close_app
+  args: {app_name: "Music"}
+- text: "close calendar"
+  intent: close_app
+  args: {app_name: "Calendar"}
+- text: "close reminders"
+  intent: close_app
+  args: {app_name: "Reminders"}
+- text: "close photos"
+  intent: close_app
+  args: {app_name: "Photos"}
+- text: "close maps"
+  intent: close_app
+  args: {app_name: "Maps"}

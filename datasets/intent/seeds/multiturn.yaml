@@ -1,0 +1,105 @@
+# Multi-turn: the single biggest gap found in live testing. Roughly a quarter of
+# a real session is the user referring back -- "close it", "the app", "add that
+# to my notes" -- and with no history the model invented a target ("Close the app
+# for me." produced app_name "MyApp" and tried to quit it).
+#
+# `context` holds the turns that came BEFORE. build_dataset renders them as real
+# user/assistant pairs, byte-identical to what SlmParser reconstructs from its KV
+# cache at inference.
+#
+# THE NEGATIVE CASES MATTER AS MUCH AS THE POSITIVE ONES. A pronoun with nothing
+# to resolve against is still unknown -- carrying history must not turn "close
+# it" into a guess when no app was ever mentioned.
+
+# -- resolving a pronoun against the previous turn ------------------------------
+- text: "close it"
+  intent: close_app
+  args: {app_name: "Google Chrome"}
+  context:
+    - {text: "open google chrome", intent: open_app, args: {app_name: "Google Chrome"}}
+- text: "close it for me"
+  intent: close_app
+  args: {app_name: "Spotify"}
+  context:
+    - {text: "open spotify", intent: open_app, args: {app_name: "Spotify"}}
+- text: "close the app for me"
+  intent: close_app
+  args: {app_name: "Music"}
+  context:
+    - {text: "open apple music for me", intent: open_app, args: {app_name: "Music"}}
+- text: "close that app"
+  intent: close_app
+  args: {app_name: "Terminal"}
+  context:
+    - {text: "open terminal", intent: open_app, args: {app_name: "Terminal"}}
+- text: "now close it"
+  intent: close_app
+  args: {app_name: "Safari"}
+  context:
+    - {text: "can you open safari", intent: open_app, args: {app_name: "Safari"}}
+- text: "open it again"
+  intent: open_app
+  args: {app_name: "Notes"}
+  context:
+    - {text: "close notes", intent: close_app, args: {app_name: "Notes"}}
+
+# -- follow-up modifiers --------------------------------------------------------
+- text: "make it louder"
+  intent: set_volume
+  args: {direction: "up"}
+  context:
+    - {text: "turn the volume up", intent: set_volume, args: {direction: "up"}}
+- text: "a bit more"
+  intent: set_volume
+  args: {direction: "up"}
+  context:
+    - {text: "increase the volume", intent: set_volume, args: {direction: "up"}}
+- text: "now turn it down"
+  intent: set_volume
+  args: {direction: "down"}
+  context:
+    - {text: "turn the volume up", intent: set_volume, args: {direction: "up"}}
+- text: "actually pause it"
+  intent: media_control
+  args: {action: "pause"}
+  context:
+    - {text: "play the music", intent: media_control, args: {action: "play"}}
+
+# -- a pronoun with NOTHING to resolve against is still unknown -----------------
+
+# -- a pronoun with NOTHING to resolve against is still unknown -----------------
+# These carry the SAME text as positive cases above and differ only in context.
+# That is deliberate and it is the whole point: carrying history must not turn
+# "close it" into a guess when no app was ever mentioned. Any dedupe that keys on
+# text alone will silently delete them -- build_dataset._identity keys on context
+# too, for exactly this reason.
+- text: "close it"
+  intent: unknown
+  args: {}
+  context:
+    - {text: "what time is it", intent: get_time, args: {}}
+- text: "close the app for me"
+  intent: unknown
+  args: {}
+  context:
+    - {text: "how much battery do I have left", intent: get_status, args: {item: "battery"}}
+- text: "make it louder"
+  intent: unknown
+  args: {}
+  context:
+    - {text: "what day is it", intent: get_status, args: {item: "day"}}
+- text: "open it again"
+  intent: unknown
+  args: {}
+  context:
+    - {text: "set a timer for ten minutes", intent: set_timer, args: {value: 10, unit: "minutes"}}
+- text: "a bit more"
+  intent: unknown
+  args: {}
+  context:
+    - {text: "what is my laptop's battery", intent: get_status, args: {item: "battery"}}
+- text: "now turn it down"
+  intent: unknown
+  args: {}
+  context:
+    - {text: "what all notes do I have", intent: list_items, args: {what: "notes"}}

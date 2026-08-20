@@ -1,0 +1,175 @@
+# provenance: llm_draft -- pending human spot-check.
+# direction in {up, down, mute, unmute, set}; "level" only present for direction=set.
+- text: "turn the volume down"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "turn it up"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "volume up"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "volume down please"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "mute"
+  intent: set_volume
+  args: {direction: "mute"}
+- text: "mute the volume"
+  intent: set_volume
+  args: {direction: "mute"}
+- text: "unmute"
+  intent: set_volume
+  args: {direction: "unmute"}
+- text: "can you turn the sound down"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "make it louder"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "make it quieter"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "set the volume to 80 percent"
+  intent: set_volume
+  args: {direction: "set", level: 80}
+- text: "turn the volume all the way up"
+  intent: set_volume
+  args: {direction: "set", level: 100}
+- text: "turn the volume all the way down"
+  intent: set_volume
+  args: {direction: "set", level: 0}
+- text: "silence it"
+  intent: set_volume
+  args: {direction: "mute"}
+- text: "turn my volume up a bit"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "lower the volume"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "raise the volume"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "hey can you mute this"
+  intent: set_volume
+  args: {direction: "mute"}
+- text: "set volume to fifty"
+  intent: set_volume
+  args: {direction: "set", level: 50}
+
+# -- filler-heavy / conversational (added after zero-shot error analysis) -----------
+- text: "um can you turn the volume down"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "hey turn it down a little"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "it's too loud"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "I can't hear it, turn it up"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "crank it up"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "turn the sound up please"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "quiet please"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "shush"
+  intent: set_volume
+  args: {direction: "mute"}
+- text: "sound off"
+  intent: set_volume
+  args: {direction: "mute"}
+- text: "turn the sound back on"
+  intent: set_volume
+  args: {direction: "unmute"}
+- text: "set volume to seventy"
+  intent: set_volume
+  args: {direction: "set", level: 70}
+- text: "volume to 10 please"
+  intent: set_volume
+  args: {direction: "set", level: 10}
+
+# -- filling thin coverage: "unmute" had only 2 examples ---------------------------
+- text: "unmute it"
+  intent: set_volume
+  args: {direction: "unmute"}
+- text: "can you unmute that"
+  intent: set_volume
+  args: {direction: "unmute"}
+- text: "bring the sound back"
+  intent: set_volume
+  args: {direction: "unmute"}
+
+# -- "more" phrasings (real bug: produced direction "more", which is not valid) --------
+# "more" after a volume verb means UP. The model emitted it as a literal
+# direction and the validator rejected it -- correct, but the user just wanted
+# the volume raised.
+- text: "increase the volume more"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "can you increase the volume more"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "make the volume more up"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "turn it up more"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "a bit more volume"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "louder please"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "increase the volume"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "decrease the volume"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "decrease the volume more"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "turn it down more"
+  intent: set_volume
+  args: {direction: "down"}
+- text: "make the volume up"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "can you make the volume up"
+  intent: set_volume
+  args: {direction: "up"}
+- text: "lower it more"
+  intent: set_volume
+  args: {direction: "down"}
+
+# "Set volume to N" fell to 4/9 held-out. The cause was three unknown seeds
+# sharing the exact surface form ("set the volume to five hundred" -> unknown),
+# which have been removed -- out-of-range levels are the VALIDATOR's job. These
+# reinforce the positive form.
+- text: "set the volume to twenty five"
+  intent: set_volume
+  args: {direction: "set", level: 25}
+- text: "set the volume to eighty"
+  intent: set_volume
+  args: {direction: "set", level: 80}
+- text: "change the volume to sixty"
+  intent: set_volume
+  args: {direction: "set", level: 60}
+- text: "set volume at ninety"
+  intent: set_volume
+  args: {direction: "set", level: 90}
+- text: "make the volume fifteen"
+  intent: set_volume
+  args: {direction: "set", level: 15}
+- text: "can you set the volume to forty five"
+  intent: set_volume
+  args: {direction: "set", level: 45}

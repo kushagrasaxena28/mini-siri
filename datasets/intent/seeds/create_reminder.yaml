@@ -1,0 +1,104 @@
+# Alarms and reminders are the same capability. An in-process alarm would die
+# with the process exactly as timers do, and "wake me at 2am" is precisely the
+# case where that is useless -- so both go to Reminders.app, which survives a
+# restart and syncs.
+#
+# THE MODEL REPORTS THE CLOCK FACE IT HEARD; PYTHON BUILDS THE DATE. Same reason
+# timers report {value, unit} instead of seconds: a 1.7B model doing date
+# arithmetic produces something plausible and wrong, silently. "2 am" said at
+# 11 pm means tomorrow, and resolving that is Python's job.
+
+- text: "set an alarm for two a m"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 2, minute: 0, meridiem: "am"}
+- text: "set an alarm for seven thirty a m"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 7, minute: 30, meridiem: "am"}
+- text: "wake me up at six a m"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 6, minute: 0, meridiem: "am"}
+- text: "set an alarm for nine p m"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 9, minute: 0, meridiem: "pm"}
+- text: "alarm at five thirty"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 5, minute: 30}
+
+- text: "remind me to call mom at seven p m"
+  intent: create_reminder
+  args: {text: "call mom", hour: 7, minute: 0, meridiem: "pm"}
+- text: "remind me to take the bins out at eight a m"
+  intent: create_reminder
+  args: {text: "take the bins out", hour: 8, minute: 0, meridiem: "am"}
+- text: "set a reminder to submit the report at four p m"
+  intent: create_reminder
+  args: {text: "submit the report", hour: 4, minute: 0, meridiem: "pm"}
+- text: "remind me tomorrow at nine a m to book the flight"
+  intent: create_reminder
+  args: {text: "book the flight", hour: 9, minute: 0, meridiem: "am", day: "tomorrow"}
+- text: "remind me to water the plants tomorrow at six p m"
+  intent: create_reminder
+  args: {text: "water the plants", hour: 6, minute: 0, meridiem: "pm", day: "tomorrow"}
+- text: "set a reminder for the dentist at eleven thirty a m"
+  intent: create_reminder
+  args: {text: "dentist", hour: 11, minute: 30, meridiem: "am"}
+- text: "remind me to pay the rent"
+  intent: create_reminder
+  args: {text: "pay the rent"}
+- text: "add a reminder to buy milk"
+  intent: create_reminder
+  args: {text: "buy milk"}
+- text: "remind me about the standup at ten a m"
+  intent: create_reminder
+  args: {text: "standup", hour: 10, minute: 0, meridiem: "am"}
+- text: "set a reminder to renew the passport tomorrow"
+  intent: create_reminder
+  args: {text: "renew the passport", day: "tomorrow"}
+
+# Thin at 15 seeds. Also covers the phrasings that competed with set_timer and
+# capture_note, since "set a ... for ..." and "remind me ..." both overlap them.
+- text: "set an alarm for six thirty a m"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 6, minute: 30, meridiem: "am"}
+- text: "set an alarm for eleven p m"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 11, minute: 0, meridiem: "pm"}
+- text: "wake me at five forty five a m"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 5, minute: 45, meridiem: "am"}
+- text: "set an alarm for noon"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 12, minute: 0, meridiem: "pm"}
+- text: "can you set an alarm for seven a m"
+  intent: create_reminder
+  args: {text: "Alarm", hour: 7, minute: 0, meridiem: "am"}
+- text: "remind me to email the team at nine a m"
+  intent: create_reminder
+  args: {text: "email the team", hour: 9, minute: 0, meridiem: "am"}
+- text: "remind me to check the oven at six p m"
+  intent: create_reminder
+  args: {text: "check the oven", hour: 6, minute: 0, meridiem: "pm"}
+- text: "set a reminder to stretch at three p m"
+  intent: create_reminder
+  args: {text: "stretch", hour: 3, minute: 0, meridiem: "pm"}
+- text: "remind me to lock up at ten p m"
+  intent: create_reminder
+  args: {text: "lock up", hour: 10, minute: 0, meridiem: "pm"}
+- text: "remind me tomorrow at eight a m to send the invoice"
+  intent: create_reminder
+  args: {text: "send the invoice", hour: 8, minute: 0, meridiem: "am", day: "tomorrow"}
+- text: "can you remind me to take my medication at nine p m"
+  intent: create_reminder
+  args: {text: "take my medication", hour: 9, minute: 0, meridiem: "pm"}
+- text: "add a reminder to return the library books"
+  intent: create_reminder
+  args: {text: "return the library books"}
+- text: "remind me to back up the laptop"
+  intent: create_reminder
+  args: {text: "back up the laptop"}
+- text: "set a reminder to water the plants tomorrow"
+  intent: create_reminder
+  args: {text: "water the plants", day: "tomorrow"}
+- text: "remind me about the dentist tomorrow at two p m"
+  intent: create_reminder
+  args: {text: "dentist", hour: 2, minute: 0, meridiem: "pm", day: "tomorrow"}

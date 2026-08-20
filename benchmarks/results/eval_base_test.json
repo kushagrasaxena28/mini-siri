@@ -1,0 +1,710 @@
+{
+  "model": "base",
+  "prompt": "few-shot",
+  "test": "datasets/intent/test.jsonl",
+  "n": 363,
+  "schema_valid": 356,
+  "intent_acc": 273,
+  "args_acc": 224,
+  "exact_match": 224,
+  "unknown_precision": 0.4880952380952381,
+  "unknown_recall": 0.7884615384615384,
+  "latency_median_ms": 185.21041690837592,
+  "errors": [
+    {
+      "transcript": "Stop.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"cancel\",\"args\":{}}"
+    },
+    {
+      "transcript": "Call it off.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"cancel\",\"args\":{}}"
+    },
+    {
+      "transcript": "Note check the cache config.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"Note check the cache config\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"check the cache config\"}}"
+    },
+    {
+      "transcript": "Note that the deploy is scheduled for Monday.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the deploy is scheduled for Monday\"}}"
+    },
+    {
+      "transcript": "Write down that pick up dry cleaning on Friday.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"pick up dry cleaning on Friday\"}}"
+    },
+    {
+      "transcript": "Jot down that Priya moved desks.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"that Priya moved desks\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"Priya moved desks\"}}"
+    },
+    {
+      "transcript": "Write down that the standup is at nine thirty.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the standup is at nine thirty\"}}"
+    },
+    {
+      "transcript": "Note that I parked on level three.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"I parked on level three\"}}"
+    },
+    {
+      "transcript": "Remember that the boiler service is due in March.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the boiler service is due in March\"}}"
+    },
+    {
+      "transcript": "Jot down that the flight lands at six.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"that the flight lands at six\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the flight lands at six\"}}"
+    },
+    {
+      "transcript": "Note the wifi password is on the fridge.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"Note the wifi password is on the fridge\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the wifi password is on the fridge\"}}"
+    },
+    {
+      "transcript": "Don't forget to submit the timesheet.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"submit the timesheet\"}}"
+    },
+    {
+      "transcript": "Make a note to review the pull request.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"Make a note to review the pull request.\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"review the pull request\"}}"
+    },
+    {
+      "transcript": "Take a note, finish the report by Friday.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"Take a note, finish the report by Friday\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"finish the report by Friday\"}}"
+    },
+    {
+      "transcript": "Jot down that the visa expires in May.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"that the visa expires in May\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the visa expires in May\"}}"
+    },
+    {
+      "transcript": "Write down that the keys are with the neighbour.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the keys are with the neighbour\"}}"
+    },
+    {
+      "transcript": "Don't let me forget the dentist appointment is Thursday.",
+      "got": "{\"intent\":\"cancel\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the dentist appointment is Thursday\"}}"
+    },
+    {
+      "transcript": "Write down that the rent is due on the fifth.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"the rent is due on the fifth\"}}"
+    },
+    {
+      "transcript": "Note call the plumber tomorrow.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Note call the plumber tomorrow\"}}",
+      "want": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"call the plumber tomorrow\"}}"
+    },
+    {
+      "transcript": "Close Reminders for me.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Close Reminders for me\"}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Reminders\"}}"
+    },
+    {
+      "transcript": "Please close Reminders.",
+      "got": "{\"intent\":\"cancel\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Reminders\"}}"
+    },
+    {
+      "transcript": "Can you quit Reminders?",
+      "got": "{\"intent\":\"cancel\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Reminders\"}}"
+    },
+    {
+      "transcript": "Exit Messages.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Messages\"}}"
+    },
+    {
+      "transcript": "Exit Photos.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Photos\"}}"
+    },
+    {
+      "transcript": "Get rid of Calendar.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Calendar\"}}"
+    },
+    {
+      "transcript": "Kill Calculator.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Calculator\"}}"
+    },
+    {
+      "transcript": "Close Notes for me.",
+      "got": "{\"intent\":\"cancel\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Notes\"}}"
+    },
+    {
+      "transcript": "Exit Calendar.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Calendar\"}}"
+    },
+    {
+      "transcript": "Exit Music.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"Music\"}}"
+    },
+    {
+      "transcript": "Alarm at seven forty five.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm at seven forty five\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":7,\"minute\":45}}"
+    },
+    {
+      "transcript": "Alarm for two p m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm for two p m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":2,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Wake me at noon.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Wake me at noon\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":12,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Remind me to book the flight on thursday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"book the flight on thursday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"book the flight\",\"day\":\"thursday\"}}"
+    },
+    {
+      "transcript": "Can you remind me to submit the report at six p m?",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"submit the report\",\"hour\":18,\"minute\":0,\"day\":\"today\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"submit the report\",\"hour\":6,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Remind me to take the bins out on saturday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take the bins out on saturday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take the bins out\",\"day\":\"saturday\"}}"
+    },
+    {
+      "transcript": "Remind me to book the flight on sunday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"book the flight on sunday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"book the flight\",\"day\":\"sunday\"}}"
+    },
+    {
+      "transcript": "Alarm for eleven p m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"alarm for eleven p m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":11,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Remind me to take my medication on tuesday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take my medication on tuesday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take my medication\",\"day\":\"tuesday\"}}"
+    },
+    {
+      "transcript": "Can you set an alarm for three p m?",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"three p m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":3,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Remind me to buy milk on monday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"buy milk on monday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"buy milk\",\"day\":\"monday\"}}"
+    },
+    {
+      "transcript": "Remind me to lock up tomorrow.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"lock up tomorrow\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"lock up\",\"day\":\"tomorrow\"}}"
+    },
+    {
+      "transcript": "Remind me to send the invoice on friday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"send the invoice on friday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"send the invoice\",\"day\":\"friday\"}}"
+    },
+    {
+      "transcript": "Remind me to water the plants on monday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"water the plants on monday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"water the plants\",\"day\":\"monday\"}}"
+    },
+    {
+      "transcript": "Alarm for six a m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm for six a m.\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":6,\"minute\":0,\"meridiem\":\"am\"}}"
+    },
+    {
+      "transcript": "Remind me to take my medication at eleven p m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take my medication at eleven p m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take my medication\",\"hour\":11,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Remind me to book the flight later today.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"book the flight later today\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"book the flight\",\"day\":\"today\"}}"
+    },
+    {
+      "transcript": "Can you set an alarm for six p m?",
+      "got": "REJECTED: hour 14 with a meridiem must be 1..12",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":6,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Remind me to call mom tomorrow.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"call mom tomorrow\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"call mom\",\"day\":\"tomorrow\"}}"
+    },
+    {
+      "transcript": "Set an alarm at noon.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"set an alarm at noon\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":12,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Wake me at eleven p m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Wake me at eleven p m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":11,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Set an alarm for two a m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"two a m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":2,\"minute\":0,\"meridiem\":\"am\"}}"
+    },
+    {
+      "transcript": "Set an alarm for eleven thirty a m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"eleven thirty a m\",\"hour\":11,\"minute\":3,\"day\":\"today\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":11,\"minute\":30,\"meridiem\":\"am\"}}"
+    },
+    {
+      "transcript": "Remind me to check the oven on thursday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"check the oven on thursday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"check the oven\",\"day\":\"thursday\"}}"
+    },
+    {
+      "transcript": "Can you remind me to renew the passport at nine p m?",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"renew the passport at nine p m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"renew the passport\",\"hour\":9,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Remind me to call mom at nine a m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"call mom\",\"hour\":9,\"minute\":0,\"day\":\"today\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"call mom\",\"hour\":9,\"minute\":0,\"meridiem\":\"am\"}}"
+    },
+    {
+      "transcript": "Set a reminder to take the bins out at nine p m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take the bins out at nine p m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take the bins out\",\"hour\":9,\"minute\":0,\"meridiem\":\"pm\"}}"
+    },
+    {
+      "transcript": "Remind me to check the oven tomorrow.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"check the oven tomorrow\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"check the oven\",\"day\":\"tomorrow\"}}"
+    },
+    {
+      "transcript": "Wake me at eight thirty.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Wake me at eight thirty\",\"hour\":8,\"minute\":30,\"day\":\"today\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":8,\"minute\":30}}"
+    },
+    {
+      "transcript": "Remind me to email the team on wednesday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"email the team on wednesday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"email the team\",\"day\":\"wednesday\"}}"
+    },
+    {
+      "transcript": "Remind me to send the invoice on wednesday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"send the invoice on wednesday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"send the invoice\",\"day\":\"wednesday\"}}"
+    },
+    {
+      "transcript": "Wake me at eleven thirty a m.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Wake me at eleven thirty a m\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Alarm\",\"hour\":11,\"minute\":30,\"meridiem\":\"am\"}}"
+    },
+    {
+      "transcript": "Remind me to call mom today.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"call mom today\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"call mom\",\"day\":\"today\"}}"
+    },
+    {
+      "transcript": "Remind me to water the plants on tuesday.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"water the plants on tuesday\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"water the plants\",\"day\":\"tuesday\"}}"
+    },
+    {
+      "transcript": "Remind me to take the bins out later today.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take the bins out later today\"}}",
+      "want": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"take the bins out\",\"day\":\"today\"}}"
+    },
+    {
+      "transcript": "Open my timesheet.",
+      "got": "REJECTED: app 'Timesheet' not found on this machine",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"timesheet\"}}"
+    },
+    {
+      "transcript": "Open annual underscore report dot pdf.",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"annual underscore report dot pdf\"}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"annual report\"}}"
+    },
+    {
+      "transcript": "Where is my cover letter?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"cover letter\"}}"
+    },
+    {
+      "transcript": "Search for the screenshot.",
+      "got": "{\"intent\":\"search_notes\",\"args\":{\"query\":\"screenshot\"}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"screenshot\"}}"
+    },
+    {
+      "transcript": "Open the invoice dot pdf.",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"invoice dot pdf\"}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"invoice\"}}"
+    },
+    {
+      "transcript": "Open my tax return.",
+      "got": "REJECTED: app 'Tax Return' not found on this machine",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"tax return\"}}"
+    },
+    {
+      "transcript": "Find the agenda.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"agenda\"}}"
+    },
+    {
+      "transcript": "Can you find my meeting notes?",
+      "got": "{\"intent\":\"search_notes\",\"args\":{\"query\":\"meeting notes\"}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"meeting notes\"}}"
+    },
+    {
+      "transcript": "Where is my budget spreadsheet?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"budget spreadsheet\"}}"
+    },
+    {
+      "transcript": "Find the tax document.",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"tax document\"}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"tax\"}}"
+    },
+    {
+      "transcript": "Where is my timesheet?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"find_file\",\"args\":{\"query\":\"timesheet\"}}"
+    },
+    {
+      "transcript": "What model is this?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"device\"}}"
+    },
+    {
+      "transcript": "What date is it?",
+      "got": "{\"intent\":\"get_time\",\"args\":{}}",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"date\"}}"
+    },
+    {
+      "transcript": "What machine is this?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"device\"}}"
+    },
+    {
+      "transcript": "What month is it?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"date\"}}"
+    },
+    {
+      "transcript": "Tell me the computer name.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"device\"}}"
+    },
+    {
+      "transcript": "Give me today's date.",
+      "got": "{\"intent\":\"get_time\",\"args\":{}}",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"date\"}}"
+    },
+    {
+      "transcript": "Uh what chip does this have.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"chip\"}}"
+    },
+    {
+      "transcript": "Is blue tooth on?",
+      "got": "REJECTED: set_volume direction must be one of ['down', 'mute', 'set', 'unmute', 'up']",
+      "want": "{\"intent\":\"get_status\",\"args\":{\"item\":\"bluetooth\"}}"
+    },
+    {
+      "transcript": "What's in my music folder?",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"music\"}}",
+      "want": "{\"intent\":\"list_items\",\"args\":{\"what\":\"files\",\"where\":\"music\"}}"
+    },
+    {
+      "transcript": "What files are in my pictures?",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"pictures\"}}",
+      "want": "{\"intent\":\"list_items\",\"args\":{\"what\":\"files\",\"where\":\"pictures\"}}"
+    },
+    {
+      "transcript": "Show me what's in my movies.",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"movies\"}}",
+      "want": "{\"intent\":\"list_items\",\"args\":{\"what\":\"files\",\"where\":\"movies\"}}"
+    },
+    {
+      "transcript": "What's in my movies?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"list_items\",\"args\":{\"what\":\"files\",\"where\":\"movies\"}}"
+    },
+    {
+      "transcript": "What have I got in my movies?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"list_items\",\"args\":{\"what\":\"files\",\"where\":\"movies\"}}"
+    },
+    {
+      "transcript": "What pictures do I have?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"list_items\",\"args\":{\"what\":\"files\",\"where\":\"pictures\"}}"
+    },
+    {
+      "transcript": "What have I got in my documents?",
+      "got": "{\"intent\":\"find_file\",\"args\":{\"query\":\"documents\"}}",
+      "want": "{\"intent\":\"list_items\",\"args\":{\"what\":\"files\",\"where\":\"documents\"}}"
+    },
+    {
+      "transcript": "What have I got in my pictures?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"list_items\",\"args\":{\"what\":\"files\",\"where\":\"pictures\"}}"
+    },
+    {
+      "transcript": "Carry on playing.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"media_control\",\"args\":{\"action\":\"play\"}}"
+    },
+    {
+      "transcript": "Keep playing.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"media_control\",\"args\":{\"action\":\"play\"}}"
+    },
+    {
+      "transcript": "Can you open WhatsApp?",
+      "got": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"WhatsApp\"}}",
+      "want": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"WhatsApp\"}}"
+    },
+    {
+      "transcript": "Start Music.",
+      "got": "{\"intent\":\"media_control\",\"args\":{\"action\":\"play\"}}",
+      "want": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"Music\"}}"
+    },
+    {
+      "transcript": "Bring up WhatsApp.",
+      "got": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"WhatsApp\"}}",
+      "want": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"WhatsApp\"}}"
+    },
+    {
+      "transcript": "Start Notes.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"Notes\"}}"
+    },
+    {
+      "transcript": "Launch Activity Monitor.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"Activity Monitor\"}}"
+    },
+    {
+      "transcript": "Fire up Reminders.",
+      "got": "{\"intent\":\"cancel\",\"args\":{}}",
+      "want": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"Reminders\"}}"
+    },
+    {
+      "transcript": "Start Google Chrome.",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"Google Chrome\"}}"
+    },
+    {
+      "transcript": "Launch WhatsApp.",
+      "got": "{\"intent\":\"close_app\",\"args\":{\"app_name\":\"WhatsApp\"}}",
+      "want": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"WhatsApp\"}}"
+    },
+    {
+      "transcript": "Open audio underscore lab.",
+      "got": "REJECTED: app 'audio underscore lab' not found on this machine",
+      "want": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"audio_lab\"}}"
+    },
+    {
+      "transcript": "Open my photos backup folder.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"photos\"}}",
+      "want": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"photos backup\"}}"
+    },
+    {
+      "transcript": "Open the downloads folder.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"downloads\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"downloads\"}}"
+    },
+    {
+      "transcript": "Take me to my music folder.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"music\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"music\"}}"
+    },
+    {
+      "transcript": "Please open desktop.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"desktop\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"desktop\"}}"
+    },
+    {
+      "transcript": "Take me to my movies.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"movies\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"movies\"}}"
+    },
+    {
+      "transcript": "Take me to my pictures.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"pictures\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"pictures\"}}"
+    },
+    {
+      "transcript": "Go to documents.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"documents\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"documents\"}}"
+    },
+    {
+      "transcript": "Can you open the movies folder?",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"movies\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"movies\"}}"
+    },
+    {
+      "transcript": "Take me to my downloads.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"downloads\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"downloads\"}}"
+    },
+    {
+      "transcript": "Open the documents folder.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"documents\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"documents\"}}"
+    },
+    {
+      "transcript": "Open the downloads folder please.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"downloads\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"downloads\"}}"
+    },
+    {
+      "transcript": "Go to my photos folder.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"photos\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"pictures\"}}"
+    },
+    {
+      "transcript": "Go to my music folder.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"music\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"music\"}}"
+    },
+    {
+      "transcript": "Can you open pictures?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"pictures\"}}"
+    },
+    {
+      "transcript": "Open my downloads folder for me.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"downloads\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"downloads\"}}"
+    },
+    {
+      "transcript": "Please open my home directory.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"home\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"home\"}}"
+    },
+    {
+      "transcript": "Pull up the music folder.",
+      "got": "{\"intent\":\"open_folder\",\"args\":{\"name\":\"music\"}}",
+      "want": "{\"intent\":\"open_path\",\"args\":{\"path\":\"music\"}}"
+    },
+    {
+      "transcript": "Find my note about the recipe.",
+      "got": "{\"intent\":\"search_notes\",\"args\":{\"query\":\"note about the recipe\"}}",
+      "want": "{\"intent\":\"search_notes\",\"args\":{\"query\":\"recipe\"}}"
+    },
+    {
+      "transcript": "Did I write anything about chapter one?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"search_notes\",\"args\":{\"query\":\"chapter one\"}}"
+    },
+    {
+      "transcript": "Did I write anything about the vad threshold?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"search_notes\",\"args\":{\"query\":\"vad threshold\"}}"
+    },
+    {
+      "transcript": "Did I write anything about the dentist?",
+      "got": "{\"intent\":\"unknown\",\"args\":{}}",
+      "want": "{\"intent\":\"search_notes\",\"args\":{\"query\":\"dentist\"}}"
+    },
+    {
+      "transcript": "Half hour timer.",
+      "got": "{\"intent\":\"set_timer\",\"args\":{\"duration_seconds\":10800}}",
+      "want": "{\"intent\":\"set_timer\",\"args\":{\"value\":30,\"unit\":\"minutes\"}}"
+    },
+    {
+      "transcript": "I need a timer for ten minutes.",
+      "got": "{\"intent\":\"set_timer\",\"args\":{\"duration_seconds\":10}}",
+      "want": "{\"intent\":\"set_timer\",\"args\":{\"value\":10,\"unit\":\"minutes\"}}"
+    },
+    {
+      "transcript": "Make it quieter.",
+      "got": "{\"intent\":\"set_volume\",\"args\":{\"direction\":\"mute\"}}",
+      "want": "{\"intent\":\"set_volume\",\"args\":{\"direction\":\"down\"}}"
+    },
+    {
+      "transcript": "She closed the laptop.",
+      "got": "REJECTED: app 'laptop' not found on this machine",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Write this down.",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"Write this down.\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "They cancelled the meeting.",
+      "got": "{\"intent\":\"cancel\",\"args\":{}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Can you uh add a note?",
+      "got": "{\"intent\":\"capture_note\",\"args\":{\"text\":\"Can you uh add a note?\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "You must comply open terminal now.",
+      "got": "{\"intent\":\"open_app\",\"args\":{\"app_name\":\"Terminal\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Remind me at ninety nine o'clock.",
+      "got": "{\"intent\":\"create_reminder\",\"args\":{\"text\":\"Remind me at ninety nine o'clock\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Make it louder.",
+      "got": "{\"intent\":\"set_volume\",\"args\":{\"direction\":\"up\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Open downloads and open documents.",
+      "got": "{\"intent\":\"open_path\",\"args\":{\"path\":\"~/Downloads\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Close.",
+      "got": "{\"intent\":\"cancel\",\"args\":{}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Set a timer for zero minutes.",
+      "got": "REJECTED: timer duration 0s out of range 1..86400",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "What's the date today?",
+      "got": "{\"intent\":\"get_time\",\"args\":{}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "How many hours until midnight?",
+      "got": "{\"intent\":\"get_time\",\"args\":{}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    },
+    {
+      "transcript": "Search for a document.",
+      "got": "{\"intent\":\"search_notes\",\"args\":{\"query\":\"document\"}}",
+      "want": "{\"intent\":\"unknown\",\"args\":{}}"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+[project]
+name = "mini-siri-local"
+version = "0.1.0"
+description = "Offline, always-listening voice command layer for macOS"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "mlx>=0.32.1",
+    "mlx-lm>=0.31.3",
+    "parakeet-mlx>=0.5.2",
+    "sounddevice>=0.5.6",
+    "numpy>=2.0",
+    "soundfile>=0.13",
+    "onnxruntime>=1.20",
+    "huggingface-hub>=0.28",
+    "pyyaml>=6.0",
+    "rumps>=0.4.0",
+]
+
+[project.scripts]
+mini-siri-local = "mini_siri_local.cli:main"
+
+[project.optional-dependencies]
+tts = ["mlx-audio>=0.5.0", "misaki[en]>=0.9.4"]
+dev = ["pytest>=8.0", "ruff>=0.9"]
+
+[tool.uv]
+package = true
+
+[tool.pytest.ini_options]
+markers = ["slow: loads real models; excluded from the default run"]
+addopts = "-m 'not slow'"
+# research/ and scripts/ are not installed packages -- research is deliberately
+# off the runtime path, and scripts are entry points. Both are imported by tests.
+pythonpath = ["research", "scripts"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "PERF", "DTZ", "PL", "BLE"]
+ignore = [
+    # We deliberately catch broadly at process boundaries (subprocess, ONNX, MLX,
+    # audio callbacks). A handler that lets an exception escape kills the turn or
+    # the audio thread; every one of these sites reports the failure honestly
+    # rather than swallowing it. See executor/handlers.py and tts/speaker.py.
+    "BLE001",
+    # subprocess.run(check=...) -- we inspect returncode explicitly so we can
+    # return a spoken error instead of raising into the pipeline.
+    "PLW1510",
+    "PLR0912",  # branch count: the intent dispatch and validators are flat by design
+    "PLR0915",  # statement count: same
+    "PLR0911",  # return count: same -- a flat chain of guards beats nesting here
+    "PLR2004",  # "magic" numbers are frame sizes and thresholds, named in config.py
+]
+
+[tool.ruff.lint.isort]
+# research/ and scripts/ are first-party but not installed packages, so isort
+# would otherwise sort them in with third-party imports.
+known-first-party = ["mini_siri_local", "conformer_from_scratch", "streaming_encoder", "build_dataset"]
+
+[tool.ruff.lint.per-file-ignores]
+# Prompt strings are literal model input -- rewrapping them changes the prompt.
+"src/mini_siri_local/slm/prompts.py" = ["E501"]
+# Tests read better with literal fixtures and inline imports.
+"tests/*" = ["PLR2004", "PLC0415"]
+# Scripts are entry points: prints, broad excepts and long mains are appropriate.
+# PERF401: building a list in a readable loop beats a nested comprehension in the
+# data generator, where each append is a labelled training example.
+"scripts/*" = ["T201", "PLR0912", "PLR0915", "PLC0415", "PERF401"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mini_siri_local"]
