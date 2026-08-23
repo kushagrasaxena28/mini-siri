@@ -9,6 +9,7 @@ components so the loop can be driven in a test without loading 3 GB of models.
 
 from __future__ import annotations
 
+import math
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -21,6 +22,7 @@ from ..config import AsrConfig, AudioConfig, SlmConfig, TtsConfig, VadConfig
 from ..executor.handlers import Executor
 from ..schema.intents import Intent, IntentCall, validate
 from ..slm.parser import SlmParser
+from ..ui import Console
 from ..vad.endpoint import Endpointer, TurnEvent
 from ..vad.silero import SileroVad
 
@@ -43,40 +45,56 @@ class TurnTiming:
 
     @property
     def total_ms(self) -> float:
-        return (
-            self.endpoint_ms
-            + self.asr_ms
-            + self.slm_ms
-            + self.validate_ms
-            + self.exec_ms
-            + self.ttfa_ms
+        """Sum of the measured stages.
+
+        ttfa_ms is NaN when time-to-first-audio could not be measured -- the player was
+        already busy, so there is no meaningful "time until sound started" for this call.
+        NaN is the honest value there, but it must not swallow the whole turn, so
+        unmeasured stages are skipped rather than counted as zero.
+        """
+        stages = (
+            self.endpoint_ms,
+            self.asr_ms,
+            self.slm_ms,
+            self.validate_ms,
+            self.exec_ms,
+            self.ttfa_ms,
         )
+        return sum(v for v in stages if math.isfinite(v))
 
 
 class Assistant:
     """Owns the models and turns one utterance into one action."""
 
-    def __init__(
+    # Components are injected so the loop can be driven in a test without loading
+    # 3 GB of models; that is worth more than a lower argument count.
+    def __init__(  # noqa: PLR0913
         self,
         asr,
         slm=None,
         executor=None,
         speaker=None,
         vad_config: VadConfig | None = None,
+        *,
+        console: Console | None = None,
     ):
         self.asr = asr
         self.slm = slm
         self.executor = executor
         self.speaker = speaker
         self.vad_config = vad_config or VadConfig()
+        self.console = console or Console()
 
         # Optional observers, set by a UI. None means headless CLI behaviour.
         self.on_status: Callable[[str], None] | None = None
         self.on_turn: Callable[[str, str], None] | None = None
         self.last_turn: TurnTiming | None = None
+        self._turn_number = 0
+        self._loads_ms: dict[str, float] = {}
+        self._warmup_ms: float = 0.0
 
     @classmethod
-    def build(
+    def build(  # noqa: PLR0913 -- each argument is a separately swappable component
         cls,
         vad_config: VadConfig | None = None,
         slm_config: SlmConfig | None = None,
@@ -84,39 +102,48 @@ class Assistant:
         *,
         transcribe_only: bool = False,
         enable_tts: bool = True,
+        console: Console | None = None,
     ) -> Assistant:
         """Load and warm every model, then construct.
 
         Models are loaded once and kept resident -- loading on demand would put
         multi-second latency on the user's first command.
         """
-        print("loading models ...")
-        started = time.monotonic()
-        asr = OfflineAsr(AsrConfig())
+        console = console or Console()
+        loads: dict[str, float] = {}
+
+        def timed(label: str, build):
+            """Load one model, reporting progress -- 13 s of silence is not a status."""
+            console.loading(label)
+            started = time.monotonic()
+            built = build()
+            loads[label] = (time.monotonic() - started) * 1000
+            return built
+
+        asr = timed("asr", lambda: OfflineAsr(AsrConfig()))
 
         slm = executor = speaker = None
         if not transcribe_only:
-            slm = SlmParser(slm_config or SlmConfig())
+            slm = timed("slm", lambda: SlmParser(slm_config or SlmConfig()))
             executor = Executor()
             if enable_tts:
                 # Deferred: importing mlx_audio pulls in the Kokoro stack and spaCy.
                 try:
                     from ..tts.speaker import Speaker  # noqa: PLC0415
 
-                    speaker = Speaker(tts_config or TtsConfig())
+                    speaker = timed("tts", lambda: Speaker(tts_config or TtsConfig()))
                 except ImportError as exc:
                     # `./setup.sh --lite` installs without the tts extra. Degrade to a
                     # silent assistant rather than refusing to start; every confirmation
                     # is printed anyway.
-                    print(f"  speech synthesis unavailable ({exc.name}); continuing silently")
-                    print("  install it with: uv sync --extra tts --extra dev")
+                    console.tts_unavailable(exc.name or "mlx_audio")
 
-        assistant = cls(asr, slm, executor, speaker, vad_config)
+        assistant = cls(asr, slm, executor, speaker, vad_config, console=console)
         if executor is not None:
             executor.notify = assistant._announce_timer
-        load_ms = (time.monotonic() - started) * 1000
         warmup_ms = assistant.warm_up()
-        print(f"  load {load_ms:.0f} ms | warm-up {warmup_ms:.0f} ms")
+        assistant._loads_ms = loads
+        assistant._warmup_ms = warmup_ms
         return assistant
 
     def warm_up(self) -> float:
@@ -137,19 +164,19 @@ class Assistant:
         return (time.monotonic() - started) * 1000
 
     def _announce_timer(self, message: str) -> None:
-        print(f"\n  [timer] {message}")
+        self.console.timer(message)
         if self.speaker is not None:
             self.speaker.speak(message)
 
     def handle_transcript(self, text: str, endpoint_ms: float = 0.0, asr_ms: float = 0.0) -> None:
         """Transcript -> intent -> action -> confirmation, with one timing line."""
         if not text.strip():
-            print("  (empty transcript, ignored)")
+            self.console.empty()
             return
 
         if self.slm is None or self.executor is None:
-            print(f"  {text!r}")
-            print(f"  endpoint {endpoint_ms:5.0f} | asr {asr_ms:5.0f} ms\n")
+            self._turn_number += 1
+            self.console.transcript_only(self._turn_number, text, endpoint_ms, asr_ms)
             return
 
         parsed = self.slm.parse(text)
@@ -165,7 +192,8 @@ class Assistant:
             if self.on_turn is not None:
                 self.on_turn(text, "declined")
             self.slm.discard_last_turn()
-            print(f"  {text!r}\n  -> REJECTED: {result.reason}  (raw={result.raw[:80]!r})")
+            self._turn_number += 1
+            self.console.rejected(self._turn_number, text, result.reason, result.raw)
             if self.speaker is not None:
                 self.speaker.speak(result.speech)
             return
@@ -198,17 +226,13 @@ class Assistant:
             # would make the next real command answer to background noise.
             self.slm.discard_last_turn()
 
-        print(f"  {text!r}")
-        print(f"  -> {result.intent.value} {result.args}")
+        self._turn_number += 1
         if result.intent is Intent.UNKNOWN:
-            print("     (declined -- no action)")
-        elif action.speech:
-            print(f'     "{action.speech}"')
-        print(
-            f"  endpoint {endpoint_ms:5.0f} | asr {asr_ms:5.0f} | slm {parsed.latency_ms:5.0f} "
-            f"| exec {exec_ms:5.1f} | ttfa {ttfa_ms:5.1f}"
-            f"{' (cached)' if tts_cached else ' (synth)'} | E2E {self.last_turn.total_ms:6.0f} ms\n"
-        )
+            self.console.declined(self._turn_number, self.last_turn)
+        else:
+            self.console.action(
+                self._turn_number, self.last_turn, result.args, action.speech, tts_cached
+            )
 
     def run(
         self,
@@ -227,18 +251,20 @@ class Assistant:
             from ..audio.file_source import FileSource  # noqa: PLC0415 -- replay-only dependency
 
             source = FileSource(replay)
-            print(f"\nreplaying {replay}\n")
+            self.console.ready(self._loads_ms, self._warmup_ms, device=None)
+            self.console.replaying(replay)
         else:
             source = Capture(AudioConfig(), device)
-            print(f"  device: [{source.device_index}] {source.device_name}")
-            print("\nlistening -- speak a command (ctrl-c to stop)\n")
+            self.console.ready(self._loads_ms, self._warmup_ms, source.device_name)
+            self.console.listening()
 
         try:
             with source:
                 self.listen(source, is_muted)
         except KeyboardInterrupt:
-            print("\nstopped")
+            pass
         finally:
+            self.console.summary()
             self.close()
         return 0
 
@@ -280,7 +306,9 @@ class Assistant:
             if event is TurnEvent.TURN_START:
                 turn_number += 1
                 self._notify_status("speech")
-                print(f"  [turn {turn_number}]")
+                # Transient: overwritten by the result, so ctrl-c never leaves a
+                # turn header with nothing under it.
+                self.console.hearing()
             elif event is TurnEvent.DISCARDED:
                 endpointer.take_audio()
                 vad.reset()
@@ -288,6 +316,7 @@ class Assistant:
                 self._notify_status("listening")
             elif event is TurnEvent.TURN_END:
                 self._notify_status("thinking")
+                self.console.thinking()
                 endpoint_ms = (timestamp_ns - endpointer.t_speech_end_ns) / 1e6
                 utterance = endpointer.take_audio()
 

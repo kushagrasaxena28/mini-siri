@@ -11,32 +11,9 @@
 from __future__ import annotations
 
 import argparse
-import atexit
 import sys
 
 from .config import VadConfig
-
-
-def _release_audio_at_exit() -> None:
-    """Shut PortAudio down deterministically, before the interpreter unloads everything.
-
-    CoreAudio, PortAudio and MLX/Metal all release native state at exit and the order is
-    not guaranteed; the observed symptom is an occasional SIGSEGV or
-    `recursive_mutex lock failed` AFTER the turn has completed and output has flushed.
-    Releasing the audio stack first removes one leg of that race.
-
-    Defensive, not proven: the crash reproduced here roughly once in eleven runs, so this
-    cannot be verified by running it a few times. Only touches sounddevice if something
-    already imported it.
-    """
-    sd = sys.modules.get("sounddevice")
-    if sd is None:
-        return
-    try:
-        sd.stop()
-        sd._terminate()
-    except Exception:  # best effort at exit; never raise here
-        pass
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -103,7 +80,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
-    atexit.register(_release_audio_at_exit)
 
     from .config import enforce_offline  # noqa: PLC0415 -- must run before any model import
 

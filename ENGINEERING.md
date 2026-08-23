@@ -182,17 +182,17 @@ The pipeline is sequential and the budget is dominated by two stages. Measured o
 |---|---|---|---|---|
 | endpoint wait | 288 | 288 | 288 | 288 |
 | ASR | 0.00 | 0.00 | 0.00 | 0.00 |
-| SLM | 209 | 280 | 369 | 370 |
-| validate | 0.02 | 0.03 | 0.06 | 0.07 |
-| execute | 0.01 | 0.10 | 1.18 | 1.46 |
-| TTS (time to first audio) | 0.00 | 6.1 | 18 | 20 |
-| **end to end** | **497** | **576** | **674** | **676** |
+| SLM | 209 | 278 | 367 | 371 |
+| validate | 0.02 | 0.03 | 0.07 | 0.09 |
+| execute | 0.01 | 0.13 | 0.80 | 1.46 |
+| TTS (time to first audio) | 0.00 | 7.2 | 23 | 23 |
+| **end to end** | **497** | **577** | **667** | **670** |
 
-**Warm is stable; cold start is not.** Two consecutive runs of the same benchmark gave
-end-to-end medians of 573 and 576 ms and p95s of 676 and 674 ms -- tight enough to quote. Total
-model load over those same two runs was **6.9 s and 11.4 s**, dominated by pre-rendering the
-spoken confirmations (5.2 s and 9.6 s). Cold start is therefore reported as a range rather than
-a point estimate; quoting a single figure for it would be quoting noise.
+**Warm is stable; cold start is not.** Three runs of the same benchmark gave end-to-end medians
+of 573, 576 and 577 ms and p95s of 676, 674 and 667 ms -- tight enough to quote. Total model load
+over those runs was **6.9 s, 11.4 s and 8.2 s**, dominated by pre-rendering the spoken
+confirmations (5.2 s, 9.6 s, 6.5 s). Cold start is therefore reported as a range rather than a
+point estimate; quoting a single figure for it would be quoting noise.
 
 Resident MLX allocation 2.76 GB, peak 3.8 GB, buffer cache plateau 1.3-1.5 GB.
 
