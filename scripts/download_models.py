@@ -15,23 +15,23 @@ from huggingface_hub import snapshot_download
 
 MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 
-# `patterns` limits what snapshot_download fetches. Kokoro's repo is 122 files / 389 MB,
-# of which 327 MB is the one weights file; the rest is 54 voice packs we never load plus
-# demo audio. Fetching only the shipped voice saves 62 MB.
+# `patterns` limits what snapshot_download fetches. Kokoro's repo is 122 files / 389 MB.
 #
-# af_heart must be fetched HERE and not left to the runtime: KokoroPipeline.load_single_voice
-# lazily snapshot_downloads a missing voice, which under HF_HUB_OFFLINE fails outright --
-# and would be a network call on the runtime path regardless. Changing TtsConfig.voice
-# therefore needs a re-download; noted in config.py.
+# These patterns MUST be a superset of mlx_audio's own DEFAULT_ALLOW_PATTERNS. At load time
+# mlx_audio calls snapshot_download itself, and huggingface_hub then verifies that snapshot
+# is COMPLETE for those patterns -- so anything it would ask for and we did not fetch makes
+# the model unloadable offline with `IncompleteSnapshotError`, not merely degraded.
+#
+# That rules out fetching a single voice: mlx_audio asks for "*.safetensors", and fnmatch's
+# `*` matches `/`, so it demands all 54 voice packs. What IS safe to skip is everything it
+# never asks for -- demo audio, the duplicate .pt voices, and markdown: 34 MB of 389 MB.
 HF_REPOS = [
     ("mlx-community/parakeet-tdt-0.6b-v3", "ASR encoder+decoder (FastConformer-TDT)", None, False),
     ("Qwen/Qwen3-1.7B-MLX-4bit", "SLM for intent -> JSON", None, False),
     (
         "mlx-community/Kokoro-82M-bf16",
         "TTS confirmations",
-        # Explicit paths, not globs: huggingface_hub matches with fnmatch, whose `*`
-        # also matches `/`, so "*.safetensors" would keep all 54 voice packs.
-        ["config.json", "kokoro-v1_0.safetensors", "voices/af_heart.safetensors"],
+        ["*.json", "*.safetensors"],
         True,
     ),
 ]

@@ -33,7 +33,7 @@ cd mini-siri-local
 runs diagnostics. It is safe to re-run.
 
 ```bash
-./setup.sh --lite     # skip speech synthesis: no Kokoro (~328 MB), no spaCy/misaki
+./setup.sh --lite     # skip speech synthesis: no Kokoro (~355 MB), no spaCy/misaki
 ```
 
 `--lite` gives you recognition and intent parsing only. Confirmations are printed instead of
