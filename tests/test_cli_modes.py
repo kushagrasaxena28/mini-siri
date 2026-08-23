@@ -16,6 +16,7 @@ def test_no_arguments_selects_terminal_mode():
     args = build_parser().parse_args([])
     assert args.background is False
     assert args.check is False
+    assert args.setup is False
     assert args.say is None
     assert args.replay is None
 
@@ -36,6 +37,8 @@ def test_terminal_flag_no_longer_exists():
         ["--background", "--say", "open notes"],
         ["--background", "--replay", "clip.wav"],
         ["--check", "--replay", "clip.wav"],
+        ["--setup", "--check"],
+        ["--setup", "--background"],
     ],
 )
 def test_modes_are_mutually_exclusive(pair):
@@ -77,3 +80,13 @@ def test_empty_adapter_selects_the_base_model():
     assert resolve([]) == SlmConfig.adapter_path
     assert resolve(["--adapter", ""]) is None
     assert resolve(["--adapter", "adapters_v2"]) == "adapters_v2"
+
+
+def test_setup_is_its_own_mode():
+    assert build_parser().parse_args(["--setup"]).setup is True
+
+
+def test_notifications_are_on_unless_suppressed():
+    """Banners are opt-out, and only meaningful with --background."""
+    assert build_parser().parse_args([]).no_notify is False
+    assert build_parser().parse_args(["--background", "--no-notify"]).no_notify is True

@@ -26,6 +26,7 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
+from _datasets import require
 from mini_siri_local.config import SlmConfig
 from mini_siri_local.schema.intents import IntentCall, validate
 from mini_siri_local.slm.parser import SlmParser
@@ -81,6 +82,7 @@ def main() -> int:
     ap.add_argument("--out", default=None, help="write metrics JSON here instead of the default")
     ap.add_argument("--show-errors", action="store_true")
     args = ap.parse_args()
+    require(args.test)
 
     rows = load_test(Path(args.test))
     if args.limit:

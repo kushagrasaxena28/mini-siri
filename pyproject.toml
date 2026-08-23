@@ -13,7 +13,6 @@ dependencies = [
     "soundfile>=0.13",
     "onnxruntime>=1.20",
     "huggingface-hub>=0.28",
-    "pyyaml>=6.0",
     "rumps>=0.4.0",
 ]
 
@@ -21,8 +20,26 @@ dependencies = [
 mini-siri-local = "mini_siri_local.cli:main"
 
 [project.optional-dependencies]
-tts = ["mlx-audio>=0.5.0", "misaki[en]>=0.9.4"]
+# Deliberately NOT misaki[en]: that extra pulls spacy-curated-transformers, which pulls
+# torch (508 MB) that nothing here imports -- KokoroPipeline defaults trf=False, so G2P
+# loads en_core_web_sm with the tok2vec/tagger components only. These are the rest of
+# misaki[en], listed explicitly.
+#
+# en_core_web_sm is pinned as a real dependency rather than fetched by setup.sh: `uv sync`
+# evicts anything it does not manage, and misaki calls spacy.cli.download() at runtime when
+# the model is missing -- a network call on the runtime path this project promises not to make.
+tts = [
+    "mlx-audio>=0.5.0",
+    "misaki>=0.9.4",
+    "espeakng-loader",
+    "num2words",
+    "phonemizer-fork",
+    "spacy>=3.8",
+    "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
+]
 dev = ["pytest>=8.0", "ruff>=0.9"]
+# Dataset generation only -- not needed to run the assistant.
+train = ["pyyaml>=6.0"]
 
 [tool.uv]
 package = true
@@ -58,7 +75,10 @@ ignore = [
 [tool.ruff.lint.isort]
 # research/ and scripts/ are first-party but not installed packages, so isort
 # would otherwise sort them in with third-party imports.
-known-first-party = ["mini_siri_local", "conformer_from_scratch", "streaming_encoder", "build_dataset"]
+known-first-party = [
+    "mini_siri_local", "conformer_from_scratch", "streaming_encoder",
+    "build_dataset", "_datasets",
+]
 
 [tool.ruff.lint.per-file-ignores]
 # Prompt strings are literal model input -- rewrapping them changes the prompt.
@@ -73,6 +93,10 @@ known-first-party = ["mini_siri_local", "conformer_from_scratch", "streaming_enc
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+# Required for the pinned en_core_web_sm wheel URL in the `tts` extra.
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mini_siri_local"]

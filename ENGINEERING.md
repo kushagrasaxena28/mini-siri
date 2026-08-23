@@ -316,7 +316,8 @@ Conformer in `research/conformer_from_scratch/`.
 ### It is correct
 
 Feeding an entire utterance through the streaming loop as a single chunk reproduces the offline
-encoder to **5.513e-07**. The per-layer KV caches, the convolution hand-off, and the absolute
+encoder to **6.482e-07** (both sides forced to float32 -- the checkpoint is bfloat16, and
+relying on implicit promotion made this figure hardware-dependent; see `research/README.md`). The per-layer KV caches, the convolution hand-off, and the absolute
 position offsets are all right; this is not a broken implementation.
 
 ### The subsampling stem needs its own cache
@@ -399,7 +400,7 @@ uv run python scripts/eval_slm.py --adapter adapters   # intent accuracy on the 
 uv run python scripts/eval_slm.py --fewshot            # the un-finetuned baseline, same set
 uv run python scripts/injection_probe.py    # spoken prompt injection: documented + held-out
 uv run python scripts/tune_endpoint.py      # hangover sweep: latency AND truncation
-uv run python scripts/build_dataset.py      # regenerates the splits; should be a no-op diff
+uv run --extra train python scripts/build_dataset.py   # regenerates the splits (no-op diff)
 uv run pytest tests/ -q                     # fast: no models, no side effects
 uv run pytest tests/ -q -m slow             # loads real models
 ```
@@ -415,6 +416,7 @@ opened Terminal forty times would be unusable.
 ### Training the adapter
 
 ```bash
+uv sync --extra train                       # pyyaml, dataset generation only
 uv run python scripts/build_dataset.py      # YAML seeds -> validated, chat-templated JSONL
 uv run mlx_lm.lora --model Qwen/Qwen3-1.7B-MLX-4bit --data datasets/intent \
     --train --fine-tune-type lora --num-layers 16 --batch-size 4 --iters 1800 \
@@ -432,6 +434,17 @@ Three things this pipeline enforces:
 3. **No transcript appears in more than one split.** This is checked on the rendered text, not
    the seed text — two seeds differing only in case, punctuation or word-vs-digit form render to
    the same string, which is how four utterances originally ended up on both sides of the split.
+
+### `train.jsonl` is derived, not shipped
+
+The training split is gitignored: 8.8 MB, and `build_dataset.py` reproduces it byte-for-byte
+from the tracked seeds. `valid.jsonl`, `test.jsonl` and `seeds/` stay tracked so the reported
+accuracy remains reproducible from a clean clone.
+
+Every script that reads a dataset file checks for it and exits with the command that produces
+it. That matters most for `injection_probe.py`, which reads the training split to mark which
+probes the model was trained on -- a missing file used to yield an empty set, silently
+labelling every probe "held out" and making the security result look better than it is.
 
 ### The dataset build is deterministic
 

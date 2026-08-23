@@ -25,6 +25,7 @@ import threading
 import rumps
 
 from ..config import SlmConfig, TtsConfig, VadConfig
+from ..executor import macos
 from ..pipeline.assistant import Assistant
 
 # Emoji rather than icon files: no assets to ship, and legible in both light and
@@ -74,7 +75,9 @@ class AssistantState:
 
 
 class MenuBarApp(rumps.App):
-    def __init__(
+    # Parameters mirror the CLI flags one-for-one; bundling them into a config object
+    # would only move the same count behind a wrapper.
+    def __init__(  # noqa: PLR0913
         self,
         vad_config: VadConfig | None = None,
         slm_config: SlmConfig | None = None,
@@ -82,8 +85,10 @@ class MenuBarApp(rumps.App):
         *,
         device: str | None = None,
         enable_tts: bool = True,
+        notify: bool = True,
     ) -> None:
         super().__init__("mini-siri-local", icon=None, title=ICON_STARTING, quit_button=None)
+        self.notify = notify
 
         self.vad_config = vad_config or VadConfig()
         self.slm_config = slm_config or SlmConfig()
@@ -122,11 +127,21 @@ class MenuBarApp(rumps.App):
                 self.vad_config, self.slm_config, self.tts_config, enable_tts=self.enable_tts
             )
             self.assistant.on_status = self.state.set_status
-            self.assistant.on_turn = self.state.record_turn
+            self.assistant.on_turn = self._on_turn
             self.state.set_status("listening")
             self.assistant.run(device=self.device, replay=None, is_muted=self._muted.is_set)
         except Exception as exc:
             self.state.set_status(f"error: {type(exc).__name__}")
+
+    def _on_turn(self, transcript: str, action: str) -> None:
+        """Record the turn, and banner it if something actually happened.
+
+        Declines are deliberately silent: the microphone is always on, so notifying on
+        every overheard sentence would make the assistant unusable.
+        """
+        self.state.record_turn(transcript, action)
+        if self.notify and action != "declined":
+            macos.notify(f"{action.replace('_', ' ')}", transcript)
 
     # -- UI ----------------------------------------------------------------
 
@@ -175,16 +190,17 @@ class MenuBarApp(rumps.App):
         rumps.quit_application()
 
 
-def main(
+def main(  # noqa: PLR0913 -- mirrors the CLI flags; see MenuBarApp.__init__
     vad_config: VadConfig | None = None,
     slm_config: SlmConfig | None = None,
     tts_config: TtsConfig | None = None,
     *,
     device: str | None = None,
     enable_tts: bool = True,
+    notify: bool = True,
 ) -> int:
     MenuBarApp(
-        vad_config, slm_config, tts_config, device=device, enable_tts=enable_tts
+        vad_config, slm_config, tts_config, device=device, enable_tts=enable_tts, notify=notify
     ).run()
     return 0
 

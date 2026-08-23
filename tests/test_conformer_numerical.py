@@ -26,6 +26,17 @@ pytestmark = pytest.mark.slow
 TOLERANCE = 1e-4
 SEQ_LEN = 32
 
+# BOTH blocks are forced to float32 before comparing. The checkpoint ships in bfloat16,
+# which carries ~3 significant digits: run the comparison in bf16 and the difference is
+# ~7.5e-01, not ~2e-05. Passing float32 inputs to bf16 weights makes MLX promote
+# implicitly, and that promotion varies by MLX version and by GPU -- which is how this
+# test passed on an M1 Pro and failed on an M5 with a diff of 8e-02.
+#
+# Being explicit makes the test measure ALGORITHMIC equivalence, which is what it claims,
+# rather than how bf16 rounding happens to land on the machine running it. Do not loosen
+# TOLERANCE to accommodate bf16: that hides the very thing this test exists to catch.
+COMPARE_DTYPE = mx.float32
+
 
 @pytest.fixture(scope="module")
 def reference_block():
@@ -33,6 +44,7 @@ def reference_block():
 
     model = from_pretrained("mlx-community/parakeet-tdt-0.6b-v3")
     block = model.encoder.layers[0]
+    block.set_dtype(COMPARE_DTYPE)
     block.eval()
     return block
 
@@ -42,6 +54,7 @@ def our_block(reference_block):
     """Our implementation, loaded with the PRETRAINED weights."""
     block = ConformerBlock(ConformerConfig())
     block.update(tree_unflatten(list(tree_flatten(reference_block.parameters()))))
+    block.set_dtype(COMPARE_DTYPE)
     block.eval()
     return block
 

@@ -197,8 +197,8 @@ class StreamingEncoder:
 
         Recovering future context genuinely requires RE-ENCODING those frames
         once the lookahead audio exists, which costs compute and latency. Given
-        the measured transcript impact (see stage-05-results.md) that trade was
-        not worth taking here, so the loop runs with zero lookahead.
+        the measured transcript impact (research/README.md, ENGINEERING.md §6)
+        that trade was not worth taking here, so the loop runs with zero lookahead.
         """
         features = self._run_layers(mel_chunk)
         self.cache.advance(features.shape[1])

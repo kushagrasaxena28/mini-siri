@@ -80,15 +80,22 @@ def main() -> int:
     audio = Path(sys.argv[1]) if len(sys.argv) > 1 else default_clip
     if audio.exists():
         print(f"\nTranscribing {audio}")
+        # Read with soundfile and hand over samples, exactly as asr/offline.py does.
+        # Passing a PATH to parakeet's transcribe() routes through its own loader, which
+        # shells out to ffmpeg -- a system dependency nothing else in this project needs.
+        import soundfile as sf
+        from parakeet_mlx.audio import get_logmel
+
+        samples, _ = sf.read(str(audio), dtype="float32")
+        mel = get_logmel(mx.array(samples), asr.preprocessor_config)
+
         t0 = time.monotonic()
-        result = asr.transcribe(str(audio))
-        dt = time.monotonic() - t0
-        print(f"  cold : {dt:.2f}s")
+        result = asr.generate(mel)
+        print(f"  cold : {time.monotonic() - t0:.2f}s")
         t0 = time.monotonic()
-        result = asr.transcribe(str(audio))
-        warm = time.monotonic() - t0
-        print(f"  warm : {warm:.2f}s")
-        print(f"  text : {result.text!r}")
+        result = asr.generate(mel)
+        print(f"  warm : {time.monotonic() - t0:.2f}s")
+        print(f"  text : {result[0].text!r}")
     else:
         print(f"\n(no audio at {audio} -- skipping transcription)")
 
