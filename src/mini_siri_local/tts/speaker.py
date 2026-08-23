@@ -70,4 +70,7 @@ class Speaker:
         self.player.wait(timeout_s)
 
     def close(self) -> None:
+        # Synthesiser first: its background thread must stop before the audio device
+        # goes away, and before the interpreter starts unloading MLX.
+        self.synthesizer.close()
         self.player.close()

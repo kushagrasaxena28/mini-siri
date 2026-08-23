@@ -82,9 +82,33 @@ would make it unusable. `--no-notify` turns them off.
 uv run mini-siri-local
 ```
 
-Runs attached to your terminal and prints every turn as it happens — transcript, chosen intent,
-and the per-stage timing line (`endpoint | asr | slm | exec | ttfa`). This is the one to use for
+Runs attached to your terminal and prints every turn as it happens. This is the one to use for
 testing, debugging, or just watching how it decides things. Ctrl-C to stop.
+
+```
+   1  ▸ Close what's up.
+      · declined — not a command
+      665 ms  ·  wait 288 · asr 0 · model 376 · act 0 · say 0
+
+   2  ▸ Close WhatsApp.
+      ✓ close_app  app_name=WhatsApp
+      ♪ "Closing WhatsApp."
+      634 ms  ·  wait 288 · asr 0 · model 290 · act 40 · say 16
+
+   3  ▸ What is my IP address?
+      ✗ rejected — get_status item must be one of ['battery', 'bluetooth', 'chip',
+        'date', 'day', 'device', 'storage', 'wifi']
+        {"intent":"get_status","args":{"item":"ip"}}
+```
+
+Three outcomes, visibly different at a glance: **✓** it acted, **·** it correctly ignored
+you, **✗** the model produced something the validator refused. Each turn carries its own
+per-stage breakdown, and `say —` means time-to-first-audio was not measurable because the
+speaker was already busy — not that it took zero.
+
+Ctrl-C prints a session summary (turn counts, median and p95 end-to-end). Colour is
+automatic and disabled when the output is not a terminal, so piping to a file gives clean
+text; `NO_COLOR=1` forces it off.
 
 ### Other modes
 
@@ -195,12 +219,14 @@ Stated plainly rather than buried.
   not assume it stays silent.
 - **Notes are capped at 500 characters** by the validator. Longer speech is truncated, not
   declined.
-- **A rare abort on shutdown.** Roughly once in eleven `--say` invocations the process
-  aborted during teardown (`recursive_mutex lock failed`, exit 139) *after* the action had
-  run and the output had flushed — a race between CoreAudio, PortAudio and MLX releasing
-  native state at exit. `cli.py` now shuts PortAudio down deliberately via `atexit` to remove
-  one leg of that race, and it has not recurred since. **That is not proof:** at a
-  one-in-eleven base rate, a handful of clean runs cannot distinguish a fix from luck.
+- ~~A rare abort on shutdown.~~ **Fixed.** The process used to abort during teardown
+  (`recursive_mutex lock failed`, exit 139) *after* the action had run and output had
+  flushed. Two causes, found once it became reproducible with speech synthesis enabled:
+  the background phrase pre-render was a daemon thread running MLX inference that the
+  interpreter killed mid-operation, and an `atexit` handler added earlier was calling
+  `Pa_Terminate` a second time on top of sounddevice's own correct one. The pre-render now
+  cancels cooperatively and is joined in `Speaker.close()`; the redundant handler is gone.
+  0 crashes in 22 runs, against 2-in-6 immediately before.
 - **A deeply nested checkout breaks speech synthesis.** espeak-ng stores its data directory
   in a fixed 160-character buffer; past that it silently falls back to a path compiled into
   the wheel and aborts inside native code, with an error naming someone else's CI machine.
@@ -434,11 +460,11 @@ the numbers below are the committed `benchmarks/results/pipeline_latency.json`.
 |---|---|---|
 | deciding you finished speaking | 288 ms | 288 ms |
 | speech → text | **0 ms** | **0 ms** |
-| text → intent | 280 ms | 369 ms |
-| validating the model's JSON | 0.03 ms | 0.06 ms |
-| performing the action | 0.10 ms | 1.18 ms |
-| starting to speak back | 6.1 ms | 18 ms |
-| **total** | **576 ms** | **674 ms** |
+| text → intent | 278 ms | 367 ms |
+| validating the model's JSON | 0.03 ms | 0.07 ms |
+| performing the action | 0.13 ms | 0.80 ms |
+| starting to speak back | 7.2 ms | 23 ms |
+| **total** | **577 ms** | **667 ms** |
 
 **Speech recognition costs zero** because it does not happen after you stop talking — it happens
 *while* the assistant is waiting to be sure you have. Dropping the trailing silence means the
@@ -450,10 +476,10 @@ What is left is the wait itself (50%) and the language model (49%). The wait is 
 not a model limitation: shortening it makes responses faster and risks cutting you off
 mid-sentence, so `scripts/tune_endpoint.py` reports truncation alongside latency.
 
-Warm per-turn latency is stable — two consecutive 40-turn runs gave end-to-end medians of 573 ms
-and 576 ms, p95 676 ms and 674 ms. **Cold start is not stable** and is reported as a range: total
-model load measured **6.9 s and 11.4 s** across those same two runs, dominated by pre-rendering
-the spoken confirmations (5.2 s and 9.6 s). Averaging cold and warm would be meaningless, so they
+Warm per-turn latency is stable — three 40-turn runs gave end-to-end medians of 573, 576 and
+577 ms, p95 676, 674 and 667 ms. **Cold start is not stable** and is reported as a range: total
+model load measured **6.9 s, 11.4 s and 8.2 s** across those runs, dominated by pre-rendering the
+spoken confirmations (5.2 s, 9.6 s, 6.5 s). Averaging cold and warm would be meaningless, so they
 are kept separate.
 
 Memory: 2.76 GB of MLX allocations resident, 3.8 GB peak, with all four models loaded and warm.

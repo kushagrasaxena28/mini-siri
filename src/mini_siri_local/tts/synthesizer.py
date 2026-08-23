@@ -105,6 +105,7 @@ class Synthesizer:
         self._cache: dict[str, np.ndarray] = {}
         self._lock = threading.Lock()
         self._background_thread: threading.Thread | None = None
+        self._stop_prerender = threading.Event()
 
     def is_cached(self, text: str) -> bool:
         with self._lock:
@@ -160,6 +161,11 @@ class Synthesizer:
 
         def worker() -> None:
             for index, phrase in enumerate(PARAMETERISED_PHRASES, start=1):
+                # Checked between phrases so close() can end this promptly. A daemon
+                # thread running MLX inference that the interpreter kills at exit takes
+                # Metal down mid-operation -- see close().
+                if self._stop_prerender.is_set():
+                    return
                 try:
                     self.synthesize(phrase)
                 except Exception:
@@ -172,6 +178,21 @@ class Synthesizer:
         thread.start()
         self._background_thread = thread
         return thread
+
+    def close(self, timeout_s: float = 10.0) -> None:
+        """Stop background pre-rendering and wait for it to actually stop.
+
+        Without this the worker is a daemon thread doing MLX inference when the
+        interpreter exits. Python kills daemon threads abruptly, so Metal is torn down
+        while a synthesis is in flight -- which surfaces as
+        `recursive_mutex lock failed` or a SIGSEGV *after* the assistant has finished
+        and printed its output. Cooperative cancellation, then a bounded join.
+        """
+        self._stop_prerender.set()
+        thread = self._background_thread
+        if thread is not None and thread.is_alive():
+            thread.join(timeout=timeout_s)
+        self._background_thread = None
 
     def wait_for_background_prerender(self, timeout_s: float = 180.0) -> None:
         """Block until background pre-rendering finishes. Used by benchmarks so
