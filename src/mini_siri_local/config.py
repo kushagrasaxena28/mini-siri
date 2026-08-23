@@ -152,9 +152,8 @@ class SlmConfig:
 @dataclass(frozen=True)
 class TtsConfig:
     model_id: str = "mlx-community/Kokoro-82M-bf16"
-    # scripts/download_models.py fetches THIS voice only (the repo carries 54, ~62 MB).
-    # Changing it needs a re-download first: the pipeline would otherwise try to fetch the
-    # voice at runtime, which HF_HUB_OFFLINE blocks.
+    # Any voice in the Kokoro repo works: download_models.py fetches all of them, because
+    # mlx_audio verifies the snapshot is complete for "*.safetensors" before loading.
     voice: str = "af_heart"
     lang_code: str = "a"  # American English
     sample_rate_hz: int = 24_000  # Kokoro's native rate, NOT the 16 kHz capture rate
