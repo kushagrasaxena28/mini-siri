@@ -25,8 +25,19 @@ def is_virtual(name: str, cfg: AudioConfig) -> bool:
     return any(h in name.lower() for h in cfg.virtual_hints)
 
 
+def is_deprioritised(name: str, cfg: AudioConfig) -> bool:
+    """Real hardware we should not pick unless asked -- a Continuity iPhone/iPad."""
+    return any(h in name.lower() for h in cfg.deprioritised_hints)
+
+
 def select_input(cfg: AudioConfig, override: str | None = None) -> tuple[int, str]:
-    """Preferred name -> first non-virtual -> anything. Raises if no input exists."""
+    """--device -> built-in mic -> any ordinary device -> non-virtual -> anything.
+
+    The middle two steps exist because a nearby iPhone is offered as an input by
+    Continuity and is real enough to pass the virtual filter, so it used to win by
+    enumeration order on any Mac whose built-in mic was not literally named
+    "MacBook Pro Microphone" -- and a locked phone records silence.
+    """
     inputs = list_inputs()
     if not inputs:
         raise NoInputDeviceError("no audio input devices found")
@@ -41,6 +52,9 @@ def select_input(cfg: AudioConfig, override: str | None = None) -> tuple[int, st
         for i, d in inputs:
             if want.lower() in d["name"].lower():
                 return i, d["name"]
+    for i, d in inputs:
+        if not is_virtual(d["name"], cfg) and not is_deprioritised(d["name"], cfg):
+            return i, d["name"]
     for i, d in inputs:
         if not is_virtual(d["name"], cfg):
             return i, d["name"]

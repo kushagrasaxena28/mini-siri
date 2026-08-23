@@ -5,6 +5,7 @@ uv run python scripts/download_models.py
 
 from __future__ import annotations
 
+import argparse
 import sys
 import time
 import urllib.request
@@ -14,10 +15,25 @@ from huggingface_hub import snapshot_download
 
 MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 
+# `patterns` limits what snapshot_download fetches. Kokoro's repo is 122 files / 389 MB,
+# of which 327 MB is the one weights file; the rest is 54 voice packs we never load plus
+# demo audio. Fetching only the shipped voice saves 62 MB.
+#
+# af_heart must be fetched HERE and not left to the runtime: KokoroPipeline.load_single_voice
+# lazily snapshot_downloads a missing voice, which under HF_HUB_OFFLINE fails outright --
+# and would be a network call on the runtime path regardless. Changing TtsConfig.voice
+# therefore needs a re-download; noted in config.py.
 HF_REPOS = [
-    ("mlx-community/parakeet-tdt-0.6b-v3", "ASR encoder+decoder (FastConformer-TDT)"),
-    ("Qwen/Qwen3-1.7B-MLX-4bit", "SLM for intent -> JSON"),
-    ("mlx-community/Kokoro-82M-bf16", "TTS confirmations"),
+    ("mlx-community/parakeet-tdt-0.6b-v3", "ASR encoder+decoder (FastConformer-TDT)", None, False),
+    ("Qwen/Qwen3-1.7B-MLX-4bit", "SLM for intent -> JSON", None, False),
+    (
+        "mlx-community/Kokoro-82M-bf16",
+        "TTS confirmations",
+        # Explicit paths, not globs: huggingface_hub matches with fnmatch, whose `*`
+        # also matches `/`, so "*.safetensors" would keep all 54 voice packs.
+        ["config.json", "kokoro-v1_0.safetensors", "voices/af_heart.safetensors"],
+        True,
+    ),
 ]
 
 SILERO_URL = "https://github.com/snakers4/silero-vad/raw/master/src/silero_vad/data/silero_vad.onnx"
@@ -36,14 +52,25 @@ def dir_size(p: Path) -> int:
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--skip-tts",
+        action="store_true",
+        help="skip the speech-synthesis model (matches ./setup.sh --lite)",
+    )
+    args = ap.parse_args()
+
     MODELS_DIR.mkdir(exist_ok=True)
     failed = []
 
-    for repo, purpose in HF_REPOS:
+    for repo, purpose, patterns, is_tts in HF_REPOS:
+        if is_tts and args.skip_tts:
+            print(f"\n>>> {repo}\n    {purpose}\n    skipped (--skip-tts)")
+            continue
         print(f"\n>>> {repo}\n    {purpose}")
         t0 = time.monotonic()
         try:
-            path = snapshot_download(repo_id=repo)
+            path = snapshot_download(repo_id=repo, allow_patterns=patterns)
             print(f"    ok  {human(dir_size(Path(path)))} in {time.monotonic() - t0:.0f}s")
         except Exception as e:
             print(f"    FAILED: {str(e)[:160]}")

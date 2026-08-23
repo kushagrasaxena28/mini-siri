@@ -120,6 +120,34 @@ def check_metal(report: Report) -> None:
     report.ok("matmul 1024x1024", f"{elapsed_ms:.1f} ms")
 
 
+# espeak-ng stores its data directory in a fixed 160-char buffer (N_PATH_HOME). A longer
+# path is silently rejected and it falls back to the location compiled into the wheel --
+# a GitHub Actions build path that does not exist -- then exits inside native code before
+# Python can catch anything. Only reachable from a deeply nested checkout, but the failure
+# is fatal and the error message names someone else's CI machine, so flag it here.
+ESPEAK_PATH_LIMIT = 150
+
+
+def check_espeak_data_path(report: Report) -> None:
+    try:
+        import espeakng_loader  # noqa: PLC0415 -- only present with the tts extra
+    except ImportError:
+        report.warn("espeak-ng data", "not installed", "uv sync --extra tts")
+        return
+
+    path = str(espeakng_loader.get_data_path())
+    if len(path) > ESPEAK_PATH_LIMIT:
+        report.fail(
+            "espeak-ng data path",
+            f"{len(path)} chars, over the {ESPEAK_PATH_LIMIT} espeak-ng accepts",
+            "Speech synthesis will abort with an error naming a path under /Users/runner.\n"
+            "Move the checkout somewhere shorter, e.g. ~/mini-siri-local, and re-run setup.sh.\n"
+            "Or install without synthesis:  ./setup.sh --lite",
+        )
+    else:
+        report.ok("espeak-ng data path", f"{len(path)} chars")
+
+
 def check_models(report: Report) -> None:
     hub = Path.home() / ".cache/huggingface/hub"
     for directory, purpose in REQUIRED_MODELS.items():
@@ -226,6 +254,7 @@ def run_diagnostics(*, test_microphone: bool = True) -> int:
     check_metal(report)
     print("\nModels")
     check_models(report)
+    check_espeak_data_path(report)
     print("\nAudio")
     check_audio(report, test_microphone=test_microphone)
     print("\nDisk")

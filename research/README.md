@@ -50,12 +50,20 @@ mode, and the exact pretrained weight layout.
 | check | max abs diff vs pretrained |
 |---|---|
 | feed-forward 1, attention, convolution, feed-forward 2 | each < 1e-4 |
-| **full block** | **1.907e-05** |
-| across sequence lengths 8 / 16 / 64 / 128 | 1.9e-05 – 3.4e-05 |
+| **full block** | **2.098e-05** |
+| across sequence lengths 8 / 16 / 32 / 64 / 128 | 1.9e-05 – 3.5e-05 |
 
 Exact equality is not expected and not asserted: the attention is written as a
 four-term expansion where the reference groups terms differently, so the
 difference is float accumulation order, at noise level.
+
+**Both blocks are forced to float32 before comparing, and that matters.** The checkpoint
+ships in bfloat16 — about three significant digits — so running the comparison in bf16
+gives ~7.5e-01, not ~2e-05. Feeding float32 inputs to bf16 weights makes MLX promote
+implicitly, and that promotion varies by MLX version and by GPU: this test passed on an
+M1 Pro and failed on an M5 with a difference of 8e-02 before the dtype was made explicit.
+Being explicit means the test measures algorithmic equivalence — what it claims — rather
+than how bf16 rounding happens to land on the machine running it.
 
 **Status: kept, not shipped.** The runtime calls `parakeet-mlx` because it is
 maintained, decoded end-to-end, and faster to keep current. This block exists as
@@ -74,7 +82,7 @@ is processed as though the whole utterance were available, minus the future.
 
 **What worked — the implementation is correct.** Feeding an entire utterance
 through the streaming loop as a single chunk reproduces the offline encoder to
-**5.513e-07**. The per-layer KV caches, the convolution hand-off and the absolute
+**6.482e-07**. The per-layer KV caches, the convolution hand-off and the absolute
 position offsets are all right.
 
 **The non-obvious finding: the subsampling stem needs its own cache.** The

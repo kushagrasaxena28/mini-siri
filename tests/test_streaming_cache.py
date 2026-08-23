@@ -28,12 +28,20 @@ MEL_HOP_MS = 10
 # Whole-utterance-as-one-chunk must match the offline encoder to float noise.
 EXACT_TOLERANCE = 1e-5
 
+# Forced to float32 for the same reason as tests/test_conformer_numerical.py: the
+# checkpoint is bfloat16, and relying on implicit promotion makes this tolerance
+# hardware- and version-dependent. See that module's comment.
+COMPARE_DTYPE = mx.float32
+
 
 @pytest.fixture(scope="module")
 def encoder():
     from parakeet_mlx import from_pretrained
 
-    return from_pretrained("mlx-community/parakeet-tdt-0.6b-v3").encoder
+    enc = from_pretrained("mlx-community/parakeet-tdt-0.6b-v3").encoder
+    enc.set_dtype(COMPARE_DTYPE)
+    enc.eval()
+    return enc
 
 
 @pytest.fixture(scope="module")

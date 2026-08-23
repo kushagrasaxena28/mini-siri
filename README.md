@@ -13,8 +13,8 @@ Nothing leaves the laptop. Turn off Wi-Fi and it still works.
 
 > If you are here to read the engineering rather than run it, start with
 > [**What was built here, and what wasn't**](#what-was-built-here-and-what-wasnt) — a Conformer
-> encoder block reimplemented from scratch and verified to 1.9e-05 against the pretrained
-> weights, and a cache-aware streaming encoder that was built, proven correct to 5.5e-07,
+> encoder block reimplemented from scratch and verified to 2.1e-05 against the pretrained
+> weights, and a cache-aware streaming encoder that was built, proven correct to 6.5e-07,
 > measured against a pre-registered decision rule, and then deliberately not shipped.
 
 ---
@@ -31,6 +31,23 @@ cd mini-siri-local
 
 `setup.sh` installs the toolchain, creates the Python environment, downloads the models, and
 runs diagnostics. It is safe to re-run.
+
+```bash
+./setup.sh --lite     # skip speech synthesis: no Kokoro (~328 MB), no spaCy/misaki
+```
+
+`--lite` gives you recognition and intent parsing only. Confirmations are printed instead of
+spoken, and the assistant still runs — it just stays quiet.
+
+Then, once, before your first real command:
+
+```bash
+uv run mini-siri-local --setup
+```
+
+That walks through the environment, shows a live microphone level meter, speaks one reply,
+and deliberately triggers the Notes and Reminders permission dialogs — so macOS asks while
+you are watching rather than halfway through your first command.
 
 > **Run it from Terminal.app or iTerm the first time.** macOS denies microphone access to
 > terminal programs *without showing a prompt*, and editors' built-in terminals often cannot
@@ -55,6 +72,10 @@ it's doing (🎙️ listening, 🗣️ hearing you, ⚙️ working, 🔇 muted),
 that closes the input device — macOS stops showing the recording indicator, because the
 microphone genuinely is not being read.
 
+Actions also post a notification banner, so you get confirmation without watching the menu
+bar. Declines never do: the microphone is always on, and bannering every overheard sentence
+would make it unusable. `--no-notify` turns them off.
+
 ### Terminal — the default
 
 ```bash
@@ -70,12 +91,13 @@ testing, debugging, or just watching how it decides things. Ctrl-C to stop.
 These replace the listening loop entirely:
 
 ```bash
+uv run mini-siri-local --setup             # guided first-run check (see Install)
 uv run mini-siri-local --check             # diagnostics: models, audio devices, microphone
 uv run mini-siri-local --say "open notes"  # process one typed command, no microphone at all
 uv run mini-siri-local --replay clip.wav   # replay a 16 kHz WAV, for reproducible testing
 ```
 
-`--background`, `--check`, `--say` and `--replay` are mutually exclusive.
+`--background`, `--setup`, `--check`, `--say` and `--replay` are mutually exclusive.
 
 ### Flags
 
@@ -84,6 +106,7 @@ These compose with any mode above:
 | flag | effect |
 |---|---|
 | `--no-tts` | skip spoken confirmations, print instead |
+| `--no-notify` | suppress macOS notification banners (`--background` only) |
 | `--device "NAME"` | pick an input device by (partial) name |
 | `--adapter DIR` | load a different LoRA adapter than the shipped one |
 | `--hangover-ms N` | silence before a turn is closed (default 300) |
@@ -172,10 +195,17 @@ Stated plainly rather than buried.
   not assume it stays silent.
 - **Notes are capped at 500 characters** by the validator. Longer speech is truncated, not
   declined.
-- **A rare abort on shutdown.** Once in ~11 `--say` invocations, the process aborted during
-  teardown (`recursive_mutex lock failed`) *after* the action had run and the output had
-  flushed — a race in the native audio/MLX libraries at exit, not in the pipeline. Not
-  reproducible in 10 subsequent runs, so it is recorded rather than diagnosed.
+- **A rare abort on shutdown.** Roughly once in eleven `--say` invocations the process
+  aborted during teardown (`recursive_mutex lock failed`, exit 139) *after* the action had
+  run and the output had flushed — a race between CoreAudio, PortAudio and MLX releasing
+  native state at exit. `cli.py` now shuts PortAudio down deliberately via `atexit` to remove
+  one leg of that race, and it has not recurred since. **That is not proof:** at a
+  one-in-eleven base rate, a handful of clean runs cannot distinguish a fix from luck.
+- **A deeply nested checkout breaks speech synthesis.** espeak-ng stores its data directory
+  in a fixed 160-character buffer; past that it silently falls back to a path compiled into
+  the wheel and aborts inside native code, with an error naming someone else's CI machine.
+  `--check` now measures this and tells you what to do. Keep the checkout somewhere
+  reasonable (`~/mini-siri-local` is 130 characters of headroom) or use `./setup.sh --lite`.
 - **Folders are a fixed allowlist** of eight standard ones (Downloads, Documents, Desktop, …)
   for `open_path`. Apps, by contrast, resolve to anything actually installed on the machine, and
   arbitrary folders are reachable by name through Spotlight.
@@ -235,6 +265,7 @@ accurate, which `src/mini_siri_local/config.py` explains.
 Training the adapter:
 
 ```bash
+uv sync --extra train                         # pyyaml, needed only for dataset generation
 uv run python scripts/expand_seeds.py         # generate templated coverage of every intent
 uv run python scripts/build_dataset.py        # seeds -> validated, chat-templated JSONL
 uv run mlx_lm.lora --model Qwen/Qwen3-1.7B-MLX-4bit --data datasets/intent \
@@ -269,13 +300,15 @@ feed-forward pair, and the block composing them. It is loaded with the **pretrai
 weights and compared element-wise against that checkpoint's own layer:
 
 ```
-full block, max abs diff vs pretrained:  1.907e-05
+full block, max abs diff vs pretrained:  2.098e-05
 ```
 
 Writing a Conformer-*shaped* module is a tutorial exercise. Making it a numerically exact
 drop-in for pretrained weights is not — it forces the macaron ½ residual scale, pre-norm
 ordering, relative-position index arithmetic, BatchNorm eval mode and the exact weight layout
-to all be right at once. One wrong detail and the diff is 1e-1, not 1e-5.
+to all be right at once. One wrong detail and the diff explodes: setting the macaron scale to
+1.0 instead of 0.5 moves it from 2.1e-05 to **9.2e+01**, a factor of five million — and raises
+no error, returning plausible-looking features.
 
 **Scope, stated plainly:** this is one *block*, not an ASR system. The 24-layer stack, the
 subsampling frontend, the TDT decoder and the tokenizer are all `parakeet-mlx`. Verified by
@@ -293,7 +326,7 @@ deliberately not shipped**, and the decision rule was fixed before the measureme
 | **>10% worse** | **fall back to offline ASR** |
 
 `research/streaming_encoder/` carries per-layer attention and convolution state across chunks.
-Fed a whole utterance as one chunk it reproduces the offline encoder to **5.513e-07** — the
+Fed a whole utterance as one chunk it reproduces the offline encoder to **6.482e-07** — the
 implementation is correct, not broken.
 
 Along the way it turned up something the phrase "cache-aware streaming" hides: **the subsampling
@@ -346,7 +379,7 @@ Full write-up: [`research/README.md`](research/README.md) and `ENGINEERING.md` �
 ## Development
 
 ```bash
-uv run pytest tests/ -q                          # 160 fast tests, no side effects
+uv run pytest tests/ -q                          # 177 fast tests, no side effects
 uv run pytest tests/ -q -m slow                  # 33 tests that load real models (~28 min)
 uv run ruff check src tests scripts research     # lint
 ```
@@ -361,15 +394,26 @@ benchmarks/results/    the JSON artifacts behind every number in this README
 ```
 
 The fast suite needs no model weights except Silero: before `setup.sh` has run, four VAD tests
-skip rather than fail (verified from a fresh copy — 156 passed, 4 skipped). Nothing in it touches
-your apps, notes or volume; the system boundary is stubbed in `tests/conftest.py`.
+skip rather than fail. Nothing in it touches your apps, notes or volume; the system boundary is
+stubbed in `tests/conftest.py`.
+
+**`datasets/intent/train.jsonl` is not in the repository.** It is 8.8 MB and entirely derived —
+regenerate it byte-for-byte from the tracked seeds:
+
+```bash
+uv run --extra train python scripts/build_dataset.py
+```
+
+`valid.jsonl`, `test.jsonl` and `seeds/` *are* tracked, so the accuracy numbers above stay
+reproducible from a clean clone without shipping the bulk. Any script that needs a file it
+cannot find says so and exits, rather than continuing with less data than it thinks it has.
 
 Three test suites are worth pointing at specifically:
 
 - **`tests/test_conformer_numerical.py`** — a Conformer encoder block written from scratch,
-  loaded with the pretrained weights, verified to match the reference to **1.907e-05**.
+  loaded with the pretrained weights, verified to match the reference to **2.098e-05**.
 - **`tests/test_streaming_cache.py`** — the cache-aware streaming loop: one chunk reproduces the
-  offline encoder to **5.513e-07**, and the subsampling-stem cache is shown to be load-bearing
+  offline encoder to **6.482e-07**, and the subsampling-stem cache is shown to be load-bearing
   (dropping it moves the stem output by 2759.60 versus 0.0049).
 - **`tests/test_intent_safety.py`** — the safety boundary: malformed model output, out-of-allowlist
   apps and paths, file types that `open` would execute, and a test asserting destructive
@@ -427,5 +471,5 @@ held-out set.
 [`ENGINEERING.md`](ENGINEERING.md) covers the architecture, the trust boundary, the latency
 budget and how to reproduce every number here. [`research/README.md`](research/README.md) covers
 the two experiments that are deliberately not on the runtime path — including a cache-aware
-streaming encoder built, proven correct to 5.5e-07, measured against a pre-registered decision
+streaming encoder built, proven correct to 6.5e-07, measured against a pre-registered decision
 rule, and then not shipped.

@@ -23,6 +23,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from _datasets import require
+
 ADAPTER_DIR = Path("adapters")
 # Exact-match points within which two checkpoints are considered tied. ~100
 # validation rows means one row is ~1 pp.
@@ -88,6 +90,7 @@ def main() -> int:
     # on the held-out set, and the number it then reports is no longer held out.
     parser.add_argument("--eval-on", default="datasets/intent/valid.jsonl")
     args = parser.parse_args()
+    require(args.eval_on)
 
     adapter_dir = Path(args.adapter_dir)
     checkpoints = find_checkpoints(adapter_dir)

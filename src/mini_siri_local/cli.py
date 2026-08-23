@@ -2,6 +2,7 @@
 
     mini-siri-local                    run in the terminal with live timing output
     mini-siri-local --background       menu-bar app, detached from the terminal
+    mini-siri-local --setup            guided first-run check (permissions, mic level)
     mini-siri-local --check            environment diagnostics, no microphone
     mini-siri-local --say "..."        process one typed command, no audio
     mini-siri-local --replay clip.wav  replay a 16 kHz WAV instead of the microphone
@@ -10,9 +11,32 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import sys
 
 from .config import VadConfig
+
+
+def _release_audio_at_exit() -> None:
+    """Shut PortAudio down deterministically, before the interpreter unloads everything.
+
+    CoreAudio, PortAudio and MLX/Metal all release native state at exit and the order is
+    not guaranteed; the observed symptom is an occasional SIGSEGV or
+    `recursive_mutex lock failed` AFTER the turn has completed and output has flushed.
+    Releasing the audio stack first removes one leg of that race.
+
+    Defensive, not proven: the crash reproduced here roughly once in eleven runs, so this
+    cannot be verified by running it a few times. Only touches sounddevice if something
+    already imported it.
+    """
+    sd = sys.modules.get("sounddevice")
+    if sd is None:
+        return
+    try:
+        sd.stop()
+        sd._terminate()
+    except Exception:  # best effort at exit; never raise here
+        pass
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -25,6 +49,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--background",
         action="store_true",
         help="run as a menu-bar app instead of in the terminal",
+    )
+    mode.add_argument(
+        "--setup",
+        action="store_true",
+        help="interactive first-run check: environment, mic level, a spoken reply, permissions",
     )
     mode.add_argument(
         "--check",
@@ -44,6 +73,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     parser.add_argument("--device", help="input device name substring")
     parser.add_argument("--no-tts", action="store_true", help="disable spoken confirmations")
+    parser.add_argument(
+        "--no-notify",
+        action="store_true",
+        help="suppress macOS notification banners (--background only)",
+    )
     parser.add_argument(
         "--transcribe-only",
         action="store_true",
@@ -69,10 +103,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
+    atexit.register(_release_audio_at_exit)
 
     from .config import enforce_offline  # noqa: PLC0415 -- must run before any model import
 
     enforce_offline()
+
+    if args.setup:
+        from .setup_wizard import run_wizard  # noqa: PLC0415 -- only needed for this mode
+
+        return run_wizard()
 
     if args.check:
         from .diagnostics import run_diagnostics  # noqa: PLC0415 -- only needed for this mode
@@ -99,6 +139,7 @@ def main() -> int:
             TtsConfig(),
             device=args.device,
             enable_tts=not args.no_tts,
+            notify=not args.no_notify,
         )
 
     from .pipeline.assistant import Assistant  # noqa: PLC0415 -- loading models is slow

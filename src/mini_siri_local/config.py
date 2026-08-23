@@ -44,7 +44,17 @@ class AudioConfig:
     frame_samples: int = VAD_FRAME_SAMPLES
     # Device is matched by NAME, never index: indices shift when virtual drivers
     # load or headphones are plugged in, and differ between ffmpeg and sounddevice.
-    preferred_devices: tuple[str, ...] = ("MacBook Pro Microphone", "External Microphone")
+    # Substrings, matched case-insensitively -- "macbook" covers Air and Pro, and
+    # "built-in" covers the iMac/mini/Studio wording. A list naming only the Pro sent
+    # every other Mac down the fallback path.
+    preferred_devices: tuple[str, ...] = (
+        "macbook",
+        "built-in",
+        "imac",
+        "mac mini",
+        "mac studio",
+        "external microphone",
+    )
     virtual_hints: tuple[str, ...] = (
         "teams",
         "zoom",
@@ -54,6 +64,11 @@ class AudioConfig:
         "aggregate",
         "virtual",
     )
+    # Real hardware, but the wrong choice by default: macOS Continuity offers a nearby
+    # iPhone/iPad as an input, and a phone in another room or face-down records silence.
+    # Separate from virtual_hints because these ARE usable -- just only when asked for
+    # explicitly with --device.
+    deprioritised_hints: tuple[str, ...] = ("iphone", "ipad", "continuity")
     queue_max_frames: int = 64  # ~2 s; drop-oldest beyond this
 
 
@@ -137,6 +152,9 @@ class SlmConfig:
 @dataclass(frozen=True)
 class TtsConfig:
     model_id: str = "mlx-community/Kokoro-82M-bf16"
+    # scripts/download_models.py fetches THIS voice only (the repo carries 54, ~62 MB).
+    # Changing it needs a re-download first: the pipeline would otherwise try to fetch the
+    # voice at runtime, which HF_HUB_OFFLINE blocks.
     voice: str = "af_heart"
     lang_code: str = "a"  # American English
     sample_rate_hz: int = 24_000  # Kokoro's native rate, NOT the 16 kHz capture rate

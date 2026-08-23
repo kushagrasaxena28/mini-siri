@@ -100,9 +100,16 @@ class Assistant:
             executor = Executor()
             if enable_tts:
                 # Deferred: importing mlx_audio pulls in the Kokoro stack and spaCy.
-                from ..tts.speaker import Speaker  # noqa: PLC0415
+                try:
+                    from ..tts.speaker import Speaker  # noqa: PLC0415
 
-                speaker = Speaker(tts_config or TtsConfig())
+                    speaker = Speaker(tts_config or TtsConfig())
+                except ImportError as exc:
+                    # `./setup.sh --lite` installs without the tts extra. Degrade to a
+                    # silent assistant rather than refusing to start; every confirmation
+                    # is printed anyway.
+                    print(f"  speech synthesis unavailable ({exc.name}); continuing silently")
+                    print("  install it with: uv sync --extra tts --extra dev")
 
         assistant = cls(asr, slm, executor, speaker, vad_config)
         if executor is not None:

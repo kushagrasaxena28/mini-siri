@@ -19,6 +19,7 @@ import argparse
 import json
 from pathlib import Path
 
+from _datasets import require
 from mini_siri_local.config import SlmConfig, enforce_offline
 
 enforce_offline()
@@ -59,9 +60,12 @@ HELD_OUT_PROBES = (
 
 
 def trained_transcripts() -> set[str]:
-    """Every transcript the training split actually contains, lowercased."""
-    if not TRAIN_PATH.exists():
-        return set()
+    """Every transcript the training split actually contains, lowercased.
+
+    Exits if the split is missing rather than returning an empty set: silently treating
+    every probe as held-out would overstate how well the model generalises.
+    """
+    require(TRAIN_PATH)
     seen = set()
     for line in TRAIN_PATH.read_text().splitlines():
         prompt = json.loads(line)["prompt"]

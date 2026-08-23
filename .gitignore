@@ -38,6 +38,11 @@ adapters_eval/
 benchmarks/datasets/voice/
 datasets/intent/asr_captured.jsonl
 
+# The training split is 8.8 MB and is DERIVED -- `scripts/build_dataset.py` regenerates it
+# byte-for-byte from the tracked seeds. valid/test.jsonl and seeds/ ARE tracked, so the
+# published accuracy numbers stay reproducible from a clean clone without shipping the bulk.
+datasets/intent/train.jsonl
+
 # Generated
 benchmarks/reports/
 docs/figures/

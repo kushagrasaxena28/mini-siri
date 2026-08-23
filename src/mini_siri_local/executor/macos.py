@@ -74,6 +74,31 @@ def dispatch(argv: list[str]) -> None:
         print(f"  [executor] dispatch failed: {argv[0]}: {exc}")
 
 
+def escape_applescript(text: str) -> str:
+    r"""Escape a Python string for an AppleScript literal.
+
+    Backslashes first, then quotes -- reversing the order double-escapes the backslashes
+    the quote pass introduces.
+    """
+    return text.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def notify(title: str, text: str) -> None:
+    """Post a macOS notification banner. Fire-and-forget, like every other dispatch.
+
+    Used only by the menu-bar mode: in terminal mode the turn is already printed, and an
+    always-listening assistant that banner-ed every overheard sentence would be unusable.
+    """
+    dispatch(
+        [
+            "osascript",
+            "-e",
+            f'display notification "{escape_applescript(text)}" '
+            f'with title "{escape_applescript(title)}"',
+        ]
+    )
+
+
 def open_application(app_name: str) -> None:
     """`open -a`. Caller must have resolved app_name through the allowlist."""
     dispatch(["open", "-a", app_name])

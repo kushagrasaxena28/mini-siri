@@ -18,9 +18,10 @@ roughly 25-40 encoder frames at 80 ms each -- so keeping ALL past frames costs
 almost nothing and matches how this checkpoint was trained (full context).
 
 That leaves exactly ONE source of train/inference mismatch: missing FUTURE
-context. One variable is measurable; two tangled together are not. See
-`right_context_frames` in encoder.py for the knob that trades latency against
-recovering that future context.
+context. One variable is measurable; two tangled together are not. There is no
+knob for it: `encode_chunk` in encoder.py records why a lookahead parameter was
+tried and removed -- withholding frames delays output without recovering context,
+because they were already computed without the future.
 """
 
 from __future__ import annotations
