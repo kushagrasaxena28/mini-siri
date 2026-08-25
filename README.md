@@ -123,6 +123,24 @@ uv run mini-siri-local --replay clip.wav   # replay a 16 kHz WAV, for reproducib
 
 `--background`, `--setup`, `--check`, `--say` and `--replay` are mutually exclusive.
 
+### Removing it
+
+Deleting the clone is not enough — the model weights (~3.6 GB) live in the shared Hugging
+Face cache under `$HOME`, not in the repo.
+
+```bash
+uv run python scripts/uninstall.py           # dry run: shows exactly what would go
+uv run python scripts/uninstall.py --yes     # remove models and caches
+uv run python scripts/uninstall.py --yes --notes   # also remove dictated notes
+rm -rf /path/to/mini-siri-local              # then the repo itself
+```
+
+It removes only the three model repos this project downloads — anything else in that
+shared cache belongs to other software and is left alone. Dictated notes are user data,
+so they need the separate `--notes` flag. `espeak-ng`, `uv`, and anything written into
+Apple Notes or Reminders are reported but never touched; the script prints a checklist
+for those, including revoking the microphone and Automation permissions.
+
 ### Flags
 
 These compose with any mode above:
